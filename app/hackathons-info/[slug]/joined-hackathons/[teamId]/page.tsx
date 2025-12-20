@@ -1,6 +1,7 @@
 "use client";
 
 import ProjectSubmission from "@/components/projects/ProjectSubmission";
+import Results from "@/components/projects/Results";
 import TeamDetails from "@/components/teams/TeamDetails";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -8,7 +9,7 @@ import React, { useState } from "react";
 
 const page = () => {
 	const teamId = useParams()?.teamId as string | undefined;
-	const [activeTab, setActiveTab] = useState<"details" | "submission">(
+	const [activeTab, setActiveTab] = useState<"details" | "submission" | "results">(
 		"details",
 	);
 
@@ -57,12 +58,25 @@ const page = () => {
 						>
 							Project submission
 						</button>
+						<button
+							type="button"
+							onClick={() => setActiveTab("results")}
+							className={`px-4 py-1 rounded-full transition-all ${
+								activeTab === "results"
+									? "bg-white text-slate-900 shadow-md"
+									: "text-gray-600 hover:text-gray-900"
+							} `}
+						>
+							Results
+						</button>
 					</div>
 				</section>
 
 				{activeTab === "details" && <TeamDetails />}
 
 				{activeTab === "submission" && <ProjectSubmission />}
+
+				{activeTab === "results" && <Results />}
 			</main>
 		</div>
 	);

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ success: false, message: "Server configuration error" }, { status: 500 });
 	}
 
-	const folder = req.nextUrl.searchParams?.get("folder") ;
+	const folder = req.nextUrl.searchParams?.get("folder");
 
 	const authResponse = await jwtDecode();
 	const authData = await authResponse.json();

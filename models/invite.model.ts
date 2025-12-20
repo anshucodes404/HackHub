@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { type Document, Schema } from "mongoose";
 
 export interface IInvite extends Document {
   teamId: mongoose.Types.ObjectId;
@@ -8,9 +8,9 @@ export interface IInvite extends Document {
   teamName: string;
   inviterName: string;
   inviterEmail: string;
-  status: "pending" | "accepted" | "declined";
+  membersEmail: string[];
+  status: {email: string, status: "pending" | "accepted" | "rejected"}[];
   expiresAt: Date;
-  createdAt: Date;
 }
 
 const inviteSchema = new Schema<IInvite>({
@@ -20,14 +20,15 @@ const inviteSchema = new Schema<IInvite>({
   teamName: {type: String, required: true},
   inviterName: {type: String, required: true},
   inviterEmail: { type: String, required: true},
-  status: {
-    type: String,
-    enum: ["pending", "accepted", "declined"],
-    default: "pending",
-  },
+  membersEmail: {type: [String], required: true},
+  status:[
+    {
+      email: {type: String, required: true},
+      status: {type: String, enum: ["pending", "accepted", "rejected"], default: "pending"},
+    }
+  ],
   rules: [String],
   expiresAt: { type: Date, required: true },
-  createdAt: { type: Date, default: Date.now },
 });
 
 inviteSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });

@@ -5,7 +5,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest){
     try {
-        dbConnect();
+        await dbConnect();
         const searchParams = req.nextUrl.searchParams;
         console.log(searchParams)
         const teamId = searchParams.get("teamId");

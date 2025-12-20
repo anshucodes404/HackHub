@@ -64,7 +64,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
 	useEffect(() => {
 		refreshUser();
 	}, []);

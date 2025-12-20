@@ -3,29 +3,58 @@ import { Button, Input, Textarea } from "../ui";
 import { useState } from "react";
 import { useToast } from "../ToastContext";
 import uploadOnCloudinary from "@/lib/uploadOnCloudinary";
+import { useParams } from "next/navigation";
 
 const ProjectForm = () => {
     const {addToast} = useToast()
-    const [pptURL, setPptURL] = useState<Promise<string>>();
+    const [pptURL, setPptURL] = useState<string>("");
+	const [uploaded, setUploaded] = useState<boolean>(false);
+	const hackathonId = useParams().slug
+	const teamId = useParams().teamId;
  
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget);
-        console.log("Form Data:", {
-            projectName: formData.get("projectName"),
-            projectDetails: formData.get("projectDetails"),
-            githubLink: formData.get("githubLink"),
-            demoLink: formData.get("demoLink"),
-            ppt: formData.get("ppt"),
-        });
-        
+		
+		try {
+			console.log(hackathonId, teamId)
+			const formData = new FormData(e.currentTarget);
+			const data = JSON.stringify({
+				projectName: formData.get("projectName"),
+				projectDetails: formData.get("projectDetails"),
+				githubLink: formData.get("githubLink"),
+				demoLink: formData.get("demoLink"),
+				pptURL,
+			});
+			console.log(data);
+
+			const res = await fetch(`/api/hackathons/teams/projectSubmit?hackathonId=${hackathonId}&teamId=${teamId}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: data,
+			}).then(res => res.json())
+
+			if(res.success){
+				addToast("Project submitted successfully!")
+			} else {
+				addToast("Failed to submit project. Please try again.")
+			}
+			
+		} catch (error) {
+			addToast("An error occurred while submitting the project.")
+			console.error(error)
+		}
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         if(file && file.type === "application/pdf" && file.size <= 10 * 1024 * 1024){
+			addToast("Uploading presentation, please wait...")
             setPptURL(await uploadOnCloudinary(file, "project_presentations"))
+			addToast("Presentation uploaded successfully")
+			setUploaded(true)
         } else {
             addToast("Please upload a PDF file under 10MB")
         }

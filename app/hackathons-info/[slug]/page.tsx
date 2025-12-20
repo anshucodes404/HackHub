@@ -67,7 +67,7 @@ export default function Page() {
 		<div className="max-w-6xl mx-auto px-6 py-10 mt-12">
 
 			{/* //FIXME: De-Comment this component */}
-			{/*<HackathonDetails hackathon={hackathon} />*/}
+			{/* <HackathonDetails hackathon={hackathon} /> */}
 
 			{/* This part appears when called from hackathons list Page */}
 			{origin === "" && (

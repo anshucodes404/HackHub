@@ -80,7 +80,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
       transition={{ duration: 0.25, ease: "easeOut" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="bg-white shadow-lg rounded-2xl px-4 py-3 min-w-[240px] flex items-center justify-between border border-gray-200 transition-transform duration-300 hover:scale-105"
+      className="bg-white shadow-lg rounded-2xl px-4 py-3 min-w-60 flex items-center justify-between border border-gray-200 transition-transform duration-300 hover:scale-105"
     >
       <span className="text-gray-800 font-medium">{toast.message}</span>
       <button
