@@ -5,17 +5,13 @@ import Image from "next/image";
 import {
   Award,
   Calendar,
-  CalendarClock,
-  Clock,
-  Flag,
   Globe,
-  Tags,
+  MapPin,
   Users,
-  // biome-ignore lint/suspicious/noShadowRestrictedNames: <>
-  Map
+  Building2,
+  Clock
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-
 
 const HackathonCard = ({
   _id,
@@ -25,8 +21,6 @@ const HackathonCard = ({
   tagline,
   organiserName,
   duration,
-  minTeamSize,
-  maxTeamSize,
   startAt,
   registrationDeadline,
   tags,
@@ -34,123 +28,132 @@ const HackathonCard = ({
   prize,
   status,
   bannerImage,
-  btnText
+  btnText,
+  origin
 }: HackathonCardProps) => {
 
   const router = useRouter()
   const path = usePathname()
 
-    const redirectToDetailedPage = () => {
+  const redirectToDetailedPage = () => {
     if (!_id) return;
-    
-    if(path === "/hackathons"){
+
+    if (path === "/hackathons") {
       router.push(`/hackathons-info/${_id}`);
+    } else if(path === "/hosted-hackathons") {
+      router.push(`/hackathons-info/${_id}?origin=${origin || "hosted-hackathons"}`)
     } else {
-      router.push(`/hackathons-info/${_id}`)
+      router.push(`/hackathons-info/${_id}?origin=${origin || "joined-hackathons"}`)
     }
   };
 
-
   return (
-    <div className=" rounded-lg text-sm border border-gray-200/70 transition-colors shadow-md hover:bg-gray-200/80 hover:shadow-md mt-8 p-6 grid grid-cols-1 lg:grid-cols-[100px_2fr_1fr] h-52 max-w-5/6 overflow-y-hidden ">
-      <section className="lg:block hidden">
-        {bannerImage ? (
-          <Image src={bannerImage} alt="Banner" width={100} height={100} className="rounded-md" />
-        ) : (
-          <div>No banner</div>
-        )}
-      </section>
-      <section className="mx-2">
-        <h1 className="text-2xl font-bold">{hackathonName}</h1>
-        <p className="text-base">{tagline}</p>
-        <div className="ml-6 grid md:grid-cols-2 grid-cols-1">
-          <div className="mt-2">
-            <span className="text-sm">{Status(status)}</span>
-            <span className="flex gap-2 mt-2 items-center">
-              <Award className="size-4" />
-              {`₹ ${prize} in prize`}
-            </span>
+    <div className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 mt-6 flex flex-col md:flex-row h-auto md:h-64">
+
+      <div className="relative h-48 md:h-full md:w-72 md:shrink-0 bg-gray-100">
+        <Image
+          src={bannerImage || "/placeholder.jpg"}
+          alt={hackathonName}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
+        <div className="absolute top-3 left-3">
+          <span className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white rounded-full 
+                ${status === 'upcoming' ? 'bg-emerald-500' : status === 'ended' ? 'bg-red-500' : 'bg-blue-500'} 
+                shadow-sm`}>
+            {status}
+          </span>
+        </div>
+      </div>
+
+     
+      <div className="flex flex-col flex-1 p-6 justify-between">
+
+    
+        <div className="space-y-2">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                {hackathonName}
+              </h2>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <Building2 size={14} className="text-gray-400" />
+                <span>By {organiserName}</span>
+              </div>
+            </div>
+
+    
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-100 text-sm font-semibold">
+              <Award size={16} />
+              <span>₹{prize}</span>
+            </div>
           </div>
-          <div className="">
-           { mode === "online" ? (<span className="flex gap-2 mt-2 items-center">
-              <Globe className="size-4" />
-              {mode}
-            </span> ) : 
-             (<span className="flex gap-2 mt-2 items-center">
-              <Map className="size-4" />
-              {location}
-            </span>)}
-            <span className="flex gap-2 mt-2 items-center">
-              <Users className="size-4" />
-              {`${participants?.length} Teams`}
-            </span>
+
+          <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
+            {tagline}
+          </p>
+        </div>
+
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 mt-2 border-y border-gray-100">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-400 font-medium uppercase">Mode</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              {mode === 'online' ? <Globe size={16} className="text-blue-500" /> : <MapPin size={16} className="text-red-500" />}
+              <span className="capitalize">{mode}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-400 font-medium uppercase">Date</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Calendar size={16} className="text-purple-500" />
+              <span>{new Date(startAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-400 font-medium uppercase">Duration</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Clock size={16} className="text-orange-500" />
+              <span>{duration}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-400 font-medium uppercase">Teams</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Users size={16} className="text-emerald-500" />
+              <span>{participants?.length || 0} Joined</span>
+            </div>
           </div>
         </div>
 
-        <div className="mr-10 mt-4">
-          <Button onClick={redirectToDetailedPage} className="w-full cursor-pointer">{btnText}</Button>
+      
+        <div className="flex items-center justify-between pt-4 mt-auto">
+          <div className="hidden md:flex gap-2">
+            {tags?.slice(0, 3).map((tag, idx) => (
+              <span key={idx} className="px-2.5 py-1 text-xs bg-gray-50 text-gray-600 rounded-md border border-gray-100">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex-1 md:flex-none flex justify-end">
+            <Button
+            variant="secondary"
+              onClick={redirectToDetailedPage}
+              className="w-full md:w-auto px-6 py-2 rounded-lg transition-colors font-medium text-sm cursor-pointer"
+            >
+              {btnText}
+            </Button>
+          </div>
         </div>
-      </section>
-      <section className="hidden lg:block">
-        <div className="flex gap-2 mt-2 items-center">
-          <Flag className="size-4" />
-          <span>{organiserName}</span>
-        </div>
-        <div className="flex gap-2 mt-2 items-center">
-          <Calendar className="size-4" />
-          {new Date(startAt).toLocaleDateString()}
-        </div>
-        <div className="flex gap-2 mt-2 items-center">
-          <CalendarClock className="size-4" />
-          {new Date(registrationDeadline).toLocaleDateString()}
-        </div>
-        <div className="flex gap-2 mt-2 items-center">
-          <Clock className="size-4" />
-          {duration}
-        </div>
-        <div className="flex gap-2 mt-2 items-center flex-wrap">
-          <Tags className="size-4" />
-          {tags.map((tag, index) => {
-            // biome-ignore lint/suspicious/noArrayIndexKey: <>
-            return (<div key={index}>{TagsList(tag)}</div> )
-          })}
-        </div>
-      </section>
+
+      </div>
     </div>
   );
 };
-
-function TagsList(tag: string): React.ReactNode {
-  return (
-    <div className="px-2 py-1 text-xs whitespace-pre bg-blue-100 text-blue-600 rounded-full">
-      {tag}
-    </div>
-  );
-}
-
-function Status(status: string) {
-  if (status === "upcoming") {
-    return (
-      <span className="w-1/2 bg-[#23A196] text-white px-4 py-1 rounded-full ">
-        <span>{status.toUpperCase()}</span>
-      </span>
-    );
-  } 
-   if (status === "published") {
-    return (
-      <span className="w-1/2 bg-green-700 text-white px-4 py-1 rounded-full ">
-        <span>{status.toUpperCase()}</span>
-      </span>
-    );
-  } 
-   if (status === "ended") {
-    return (
-      <span className="w-1/2 bg-[#b41313] text-white px-4 py-1 rounded-full ">
-        <span>{status.toUpperCase()}</span>
-      </span>
-    );
-  } 
-  
-}
 
 export default HackathonCard;

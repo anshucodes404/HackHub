@@ -42,9 +42,12 @@ export async function GET() {
                     maxTeamSize: "$hackathonDetails.maxTeamSize",
                     status: "$status",
                     teamName: "$name",
+					teamId: "$_id"
                 }
             }
 		]);
+
+		console.log(hackathons)
 
 		return NextResponse.json(
 			new ApiResponse(true, "Hackathons fetched successfully", hackathons)

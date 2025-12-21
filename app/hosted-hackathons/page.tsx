@@ -8,8 +8,6 @@ import { useEffect, useState } from "react";
 
 const Page = () => {
    const [isGettingInfo, setIsGettingInfo] = useState<boolean>(false);
-
-   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
    useEffect(() => {
       console.log("Hackathons page mounted");
       (async () => {
@@ -46,7 +44,7 @@ const Page = () => {
                hackathons.map((hackathon) => {
                   return (
                      <div key={hackathon._id} className="cursor-pointer">
-                        <HackathonCard {...hackathon} btnText="View Details" />
+                        <HackathonCard {...hackathon} btnText="View Details" origin="hosted-hackathons" />
                      </div>
                   );
                })

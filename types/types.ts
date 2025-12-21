@@ -61,6 +61,7 @@ export interface HackathonCardProps {
 	status: string;
 	bannerImage?: string;
 	btnText: string;
+	origin?: string
 }
 
 export type DetailedHackathon = {
@@ -102,11 +103,11 @@ export type Invite = {
 };
 
 export type ParticipatedHackathonCardProps = {
-	data: {
 		hackathonId: string;
 		hackathonName: string;
 		bannerImage?: string;
 		teamName: string;
+		teamId: string;
 		startAt: Date;
 		mode: string;
 		location?: string;
@@ -115,7 +116,6 @@ export type ParticipatedHackathonCardProps = {
 		maxTeamSize: number;
 		status: string;
 	};
-};
 
 export type HackathonDetailsProps = {
 	hackathonId: string;

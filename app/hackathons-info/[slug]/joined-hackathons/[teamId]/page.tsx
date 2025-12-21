@@ -13,6 +13,8 @@ const page = () => {
 		"details",
 	);
 
+	console.log(teamId)
+
 	return (
 		<div className="max-w-6xl w-full mt-12 mx-auto">
 			<section>

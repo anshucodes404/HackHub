@@ -18,7 +18,7 @@ export interface IHackathon extends Document {
   minTeamSize: number;
   maxTeamSize: number;
   criteria: string;
-  // bannerImage?: string;
+  bannerImage?: string;
   organiserEmail: string;
   OCEmails: string[];
   socialLink?: string;
@@ -93,9 +93,9 @@ const hackathonSchema = new Schema<IHackathon>(
       type: String,
       required: true,
     },
-    // bannerImage: {
-    //   type: String
-    // },
+    bannerImage: {
+      type: String
+    },
     organiserEmail: {
       type: String,
       required: true,

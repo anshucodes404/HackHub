@@ -24,13 +24,13 @@ const hackathonReqSchema = z.object({
   tags: z.string(),
   mode: z.string(),
   prize: z.string(),
-  location: z.string()
+  location: z.string().optional()
 });
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const data = Object.fromEntries(formData.entries()); //this is json
+    const data = Object.fromEntries(formData.entries());
 
     const parsedBody = hackathonReqSchema.safeParse(data);
     if (!parsedBody.success) {

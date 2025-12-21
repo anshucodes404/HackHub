@@ -6,43 +6,31 @@ import StatsCard from "@/components/StatsCard";
 import { Input } from "@/components/ui";
 import { useEffect, useState } from "react";
 import { ParticipatedHackathonCardProps } from "@/types/types";
+import Loader from "@/components/ui/Loader";
 
 const page = () => {
-	const [hackathons, setHackathons] = useState<ParticipatedHackathonCardProps[]>([]);
-
-	// data: {
-	// 	hackathonId: string;
-	// 	hackathonName: string;
-	// 	bannerImage?: string;
-	// 	teamName: string;
-	// 	startAt: Date;
-	// 	mode: string;
-	// 	location?: string;
-	// 	organiserName: string;
-	// 	minTeamSize: number;
-	// 	maxTeamSize: number;
-	// 	status: string;
-	// };
-
-
-	//making request to fetch hackathons data
+	const [hackathons, setHackathons] = useState<ParticipatedHackathonCardProps[]>([]);	
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const fetchHackathonsData = async () => {
 		try {
+			
 			const response = await fetch(`/api/hackathons/participated/`, {method: "GET"}).then(res => res.json()).then(data => data.data)
 			console.log(response)
 			setHackathons(response)
 
 		} catch (error) {
 			console.error("Something went wrong while fetching data!!!, Try again", error)
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
 	useEffect(() => {
 		fetchHackathonsData()
 	}, [])
 
+	if(isLoading) return <Loader fullscreen />;
 
 
 	return (
@@ -85,14 +73,7 @@ const page = () => {
 						bgColor="bg-violet-200/50"
 						borderColor="border-violet-500"
 					/>
-					<StatsCard
-						title="Hours"
-						value={48}
-						icon={<User size={20} />}
-						color="text-red-700"
-						bgColor="bg-red-200/50"
-						borderColor="border-red-500"
-					/>
+					
 				</section>
 
 				<section className="mt-10">
@@ -136,7 +117,7 @@ const page = () => {
 							</select>
 
 							<select
-								disabled={true}
+								
 								name="team-status"
 								id="team-status"
 								className="rounded-lg px-2 border border-gray-300"
@@ -150,10 +131,10 @@ const page = () => {
 				</section>
 			</section>
 
-			<main className="flex-1 overflow-auto px-10 py-6">
+			<main className="flex-1 overflow-auto px-10 py-6 no-scrollbar">
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 					{hackathons.map((h) => (
-						<MyHacksCard key={h.data.hackathonId} data={h.data} />
+						<MyHacksCard key={h.hackathonId} hackathon={h} />
 					))}
 				</div>
 			</main>
