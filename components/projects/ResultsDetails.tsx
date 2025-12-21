@@ -1,20 +1,56 @@
-import React from 'react';
-import { Trophy, MessageSquare, Sparkles, Quote, Medal } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Trophy, MessageSquare, Sparkles } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import Loader from '../ui/Loader';
+
+
+interface ResultsDetailsProps {
+  name: string;
+  score: number;
+  comments: string;
+  rank: number;
+  teamId: {
+    _id: string,
+    name: string
+  }
+}
+
+interface TopTeamProps {
+  rank: number;
+  teamId: {
+    _id: string,
+    name: string
+  }
+  score: number;
+}
 
 const ResultsDetails = () => {
-  // Mock Data - In a real app, this would be passed as props
-  const teamResult = {
-    rank: 4,
-    teamName: "Pixel Pioneers",
-    score: 88,
-    feedback: "The concept was innovative and the design system was implemented beautifully. The user flow was intuitive. However, we noticed some performance bottlenecks when loading large datasets on the dashboard. The pitch was engaging but could have focused more on the business model.",
-  };
+  const {slug, teamId} = useParams()
+  console.log(slug, " ", teamId)
+  const [teamResult, setTeamResult] = useState<ResultsDetailsProps | null>(null)
+  const [loading, setLoading] = useState<boolean>(true);
+  const [topTeams, setTopTeams] = useState<TopTeamProps[]>([])
 
-  const topTeams = [
-    { rank: 1, name: "Quantum Coders", score: 98, avatar: "🥇" },
-    { rank: 2, name: "Neural Ninjas", score: 95, avatar: "🥈" },
-    { rank: 3, name: "Binary Bandits", score: 92, avatar: "🥉" },
-  ];
+  const fetchResults = async () => {
+    try {
+      const res = await fetch(`/api/hackathons/teams/result?hackathonId=${slug}&teamId=${teamId}`).then(res => res.json())
+      if(res.success){
+        setTeamResult(res.data.reviewData)
+        setTopTeams(res.data.topTeams)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchResults()
+  }, [slug, teamId])
+
+
+if(loading) return <div className='flex items-center justify-center'><Loader size={400} /></div> 
 
   return (
     <div className="max-w-3xl mx-auto w-full">
@@ -24,15 +60,16 @@ const ResultsDetails = () => {
       </div>
 
       <div className="space-y-4">
-        {/* Your Team's Performance */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">{teamResult.teamName}</h2>
-              <p className="text-sm text-gray-500">Your Submission</p>
+              <h2 className="text-xl font-bold text-gray-900">{teamResult?.teamId?.name}</h2>
+              <p className="font-mono text-sm font-semibold text-gray-600">
+                  {teamResult?.score} pts
+                </p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-blue-600">#{teamResult.rank}</div>
+              <div className="text-3xl font-bold text-blue-600">#{teamResult?.rank}</div>
               <div className="text-sm text-gray-500">Overall Rank</div>
             </div>
           </div>
@@ -44,7 +81,7 @@ const ResultsDetails = () => {
             </div>
             <div className="relative pl-4 border-l-2 border-indigo-400">
               <p className="text-gray-600 text-sm leading-relaxed italic">
-                &quot;{teamResult.feedback}&quot;
+                &quot;{teamResult?.comments}&quot;
               </p>
             </div>
           </div>
@@ -67,7 +104,7 @@ const ResultsDetails = () => {
                             `}>
                     {team.rank}
                   </div>
-                  <span className="font-medium text-gray-800">{team.name}</span>
+                  <span className="font-medium text-gray-800">{team.teamId?.name}</span>
                 </div>
                 <div className="font-mono text-sm font-semibold text-gray-600">
                   {team.score} pts

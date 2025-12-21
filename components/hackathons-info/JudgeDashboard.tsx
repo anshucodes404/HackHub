@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Search, Filter, Trophy, CheckCircle, Clock } from "lucide-react";
 import Loader from "@/components/ui/Loader";
 import TeamReviewModal from "./TeamReviewModal";
-import { useUser } from "@/components/UserContext";
 import { Input } from "../ui";
 
 export interface JudgeDashboardProps {
@@ -20,73 +19,60 @@ interface Pagination {
   hasPrevPage: boolean;
 }
 
-export interface Review {
-      _id: string,
-      hackathonId: string,
-      teamId: string,
-      judgeId: string,
-      __v: 0,
-      comments: string,
-      createdAt: Date,
-      score: number,
-      updatedAt: Date
-    }
-
-
 export interface TeamMember {
-  userId: string,
+  userId: string;
   role: string;
   name: string;
   collegeEmail: string;
 }
 
 export interface Team {
-   _id: string,
-    name: string,
-    hackathonId: string,
-    hackathonName: string,
-    leader: string,
-    members: TeamMember[],
-    status: string,
-    createdAt: Date,
-    updatedAt: Date,
-    __v: 0,
-    submission: {
-      _id: string,
-      hackathonId: string,
-      teamId: string,
-      submitterId: string,
-      projectName: string,
-      projectDetails: string,
-      githubLink: string,
-      demoLink: string,
-      pptURL: string,
-      submittedAt: Date,
-      __v: 0
-    },
-    reviews: Review
-
+  _id: string;
+  name: string;
+  hackathonId: string;
+  hackathonName: string;
+  leader: string;
+  members: TeamMember[];
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  __v: 0;
+  submission: {
+    _id: string;
+    hackathonId: string;
+    teamId: string;
+    submitterId: string;
+    projectName: string;
+    projectDetails: string;
+    githubLink: string;
+    demoLink: string;
+    pptURL: string;
+    reviewed: boolean;
+    submittedAt: Date;
+    __v: 0;
+  };
 }
 
 const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
   console.log(hackathonId);
-  const { user } = useUser();
   const [teams, setTeams] = useState<Team[] | []>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = async (page: number = 1) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/hackathons/${hackathonId}/judge-data`);
-      const json = await res.json();
-      if (json.success) {
-        setTeams(json.data.teams);
-        setPagination(json.data.pagination);
+      const res = await fetch(
+        `/api/hackathons/${hackathonId}/judge-data?page=${page}`
+      ).then((res) => res.json());
+
+      if (res.success) {
+        setTeams(res.data.teams);
+        setPagination(res.data.pagination);
       }
-      console.log(json)
+      console.log(res);
     } catch (error) {
       console.error("Failed to fetch judge data", error);
     } finally {
@@ -101,25 +87,32 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
   const handleReviewSubmit = async (reviewData: {
     score: number;
     comments: string;
+    rank: number
   }) => {
     if (!selectedTeam) return;
 
     try {
-      const res = await fetch("/api/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          hackathonId,
-          teamId: selectedTeam._id,
-          ...reviewData,
-        }),
-      }).then(res => res.json())
+      const res = await fetch(
+        `/api/hackathons/${hackathonId}/teams/${selectedTeam._id}/review-data`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reviewData),
+        }
+      ).then((res) => res.json());
       if (res.success) {
-        await fetchData();
-        setSelectedTeam(null);
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team._id === selectedTeam._id
+              ? { ...team, submission: { ...team.submission, reviewed: true } }
+              : team
+          )
+        );
       }
     } catch (error) {
       console.error("Failed to submit review", error);
+    } finally {
+      setSelectedTeam(null);
     }
   };
 
@@ -173,7 +166,7 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
             <tbody className="divide-y divide-gray-200/70">
               {filteredTeams.map((team) => {
                 const hasSubmission = team.submission;
-                 const isReviewed = team.reviews;
+                const isReviewed = team.submission?.reviewed;
 
                 return (
                   <tr
@@ -186,15 +179,17 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
                     </td>
                     <td className="p-4">
                       <div className="flex -space-x-2 overflow-hidden">
-                        {team.members.slice(0, 3).map((m: TeamMember, i: number) => (
-                          <div
-                            key={i}
-                            className="h-8 w-8 rounded-full ring-2 ring-white bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500"
-                            title={m.name}
-                          >
-                            {m.name.charAt(0)}
-                          </div>
-                        ))}
+                        {team.members
+                          .slice(0, 3)
+                          .map((m: TeamMember, i: number) => (
+                            <div
+                              key={i}
+                              className="h-8 w-8 rounded-full ring-2 ring-white bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500"
+                              title={m.name}
+                            >
+                              {m.name.charAt(0)}
+                            </div>
+                          ))}
                         {team.members.length > 3 && (
                           <div className="h-8 w-8 rounded-full ring-2 ring-white bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
                             +{team.members.length - 3}
@@ -230,16 +225,15 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
                       )}
                     </td>
                     <td className="p-4 text-right">
-                       {isReviewed ? (
-                        <div className="inline-flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                          <Trophy className="w-3.5 h-3.5" />
-                          {team.reviews.score}
-                        </div>
+                      {isReviewed ? (
+                        <span className="text-green-700 text-sm italic">
+                          Reviewed
+                        </span>
                       ) : (
                         <span className="text-gray-400 text-sm italic">
                           Rate now
                         </span>
-                      )} 
+                      )}
                     </td>
                   </tr>
                 );
@@ -263,6 +257,30 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
         team={selectedTeam}
         onSubmitReview={handleReviewSubmit}
       />
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+          <button
+            onClick={() => fetchData(pagination.currentPage - 1)}
+            disabled={!pagination.hasPrevPage}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+
+          <span className="text-sm text-gray-600">
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </span>
+
+          <button
+            onClick={() => fetchData(pagination.currentPage + 1)}
+            disabled={!pagination.hasNextPage}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

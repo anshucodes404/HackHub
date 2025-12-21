@@ -30,12 +30,12 @@ const Members = () => {
 
 	return (
 		<div className="max-w-xl mx-auto w-full">
-			<div className="font-semibold text-lg flex justify-between px-3">
+			<div className="ftext-lg flex justify-between px-3">
         <div>
-        Members: ({team ? team.members.length : 0})
+        Members: <span className="font-semibold">{team ? team.members.length : 0}</span> 
         </div>
         <div>
-          Team: HackerEyes
+          Team: <span className="font-semibold">{team?.name}</span>
         </div>
         
         </div>

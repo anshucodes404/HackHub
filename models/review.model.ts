@@ -5,7 +5,7 @@ export interface IReview extends Document {
     teamId: mongoose.Types.ObjectId;
     comments: string;
     score: number;
-    ranking?: number;
+    rank: number;
     createdAt: Date;
 }
 
@@ -15,7 +15,7 @@ const reviewSchema = new Schema<IReview>(
         teamId: { type: Schema.Types.ObjectId, ref: "Team", required: true },
         comments: { type: String, required: true },
         score: { type: Number, required: true },
-        ranking: { type: Number },
+        rank: { type: Number, required: true },
     },
     { timestamps: true }
 );
