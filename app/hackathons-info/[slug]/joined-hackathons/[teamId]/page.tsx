@@ -3,7 +3,6 @@
 import ProjectSubmission from "@/components/projects/ProjectSubmission";
 import Results from "@/components/projects/Results";
 import TeamDetails from "@/components/teams/TeamDetails";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
@@ -19,15 +18,6 @@ const page = () => {
 		<div className="max-w-6xl w-full mt-12 mx-auto">
 			<section>
 				<div className="flex">
-					<Image
-						src={
-							"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=60"
-						}
-						alt="Image"
-						height={10}
-						width={60}
-						className="mx-3 py-2 rounded-md"
-					/>
 					<div className="">
 						<h1 className="text-xl font-bold">{teamId}</h1>
 						<p>hsgdugwe</p>

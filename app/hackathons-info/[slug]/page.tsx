@@ -69,6 +69,14 @@ export default function Page() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 mt-12">
+      {
+        origin === "hosted-hackathons" && (
+          <div className="flex justify-end mb-6 gap-5 items-center">
+            <Button>Edit Information </Button>
+            <Button className="cursor-pointer" variant="secondary" onClick={() => router.push(`/hackathons-info/${slug}/hosted-hackathons/review`)} >Teams Details</Button>
+          </div>
+        )
+      }
       <HackathonDetails
         hackathon={{ ...hackathon, hackathonId: hackathon._id }}
       />
@@ -76,9 +84,8 @@ export default function Page() {
       {/* This part appears when called from hackathons list Page */}
       {origin === "" && (
         <div
-          className={`${
-            openTeamRegister || viewTeamDetails ? "hidden" : ""
-          } flex justify-center`}
+          className={`${openTeamRegister || viewTeamDetails ? "hidden" : ""
+            } flex justify-center`}
         >
           {!registered ? (
             <Button onClick={() => setOpenTeamRegister(true)}>
@@ -115,6 +122,7 @@ export default function Page() {
           hackathonName={hackathon.hackathonName}
           setRegistered={setRegistered}
           setOpenTeamRegister={setOpenTeamRegister}
+          setTeamId={setTeamId}
         />
       )}
 
@@ -128,6 +136,7 @@ export default function Page() {
               hackathonName={hackathon.hackathonName}
               setRegistered={setRegistered}
               setOpenTeamRegister={setOpenTeamRegister}
+              setTeamId={setTeamId}
             />
           ) : (
             <div className="w-full">

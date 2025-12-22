@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Search, Filter, Trophy, CheckCircle, Clock } from "lucide-react";
+import { Search, Filter, Trophy, CheckCircle, Clock, X, AlertTriangle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Loader from "@/components/ui/Loader";
 import TeamReviewModal from "./TeamReviewModal";
 import { Input } from "../ui";
+import KickTeam from "../KickTeam";
 
 export interface JudgeDashboardProps {
   hackathonId: string;
@@ -87,7 +89,7 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
   const handleReviewSubmit = async (reviewData: {
     score: number;
     comments: string;
-    rank: number
+    rank: number;
   }) => {
     if (!selectedTeam) return;
 
@@ -116,11 +118,37 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
     }
   };
 
+  const [teamToKick, setTeamToKick] = useState<Team | null>(null);
+
+  const handleKickTeam = async () => {
+    if (!teamToKick) return;
+
+    console.log(`Kicking team: ${teamToKick.name}`);
+    const res = await fetch(`/api/hackathons/${hackathonId}/teams/${teamToKick._id}/kick`, {
+      method: "DELETE",
+    }).then((res) => res.json());
+
+    if (res.success) {
+      setTeams((prevTeams) =>
+        prevTeams.filter((team) => team._id !== teamToKick._id)
+      );
+    } else {
+      console.error("Failed to kick team:", res.message);
+    }
+    
+    setTeamToKick(null);
+  };
+
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) return <Loader fullscreen={false} />;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="space-y-6">
@@ -161,6 +189,9 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
                 <th className="p-4 font-semibold text-gray-600 text-sm text-right">
                   My Score
                 </th>
+                <th className="p-4 font-semibold text-gray-600 text-sm text-center">
+                  Kick
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200/70">
@@ -200,13 +231,12 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
                     <td className="p-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            ${
-                              team.status === "Disqualified"
-                                ? "bg-red-100 text-red-800"
-                                : team.status === "Won"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
+                            ${team.status === "Disqualified"
+                            ? "bg-red-100 text-red-800"
+                            : team.status === "Won"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
                       >
                         {team.status}
                       </span>
@@ -235,13 +265,25 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
                         </span>
                       )}
                     </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setTeamToKick(team);
+                        }}
+                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                        title="Kick Team"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
 
               {filteredTeams.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-gray-500">
+                  <td colSpan={6} className="p-8 text-center text-gray-500">
                     No teams found matching your search.
                   </td>
                 </tr>
@@ -257,6 +299,12 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
         team={selectedTeam}
         onSubmitReview={handleReviewSubmit}
       />
+
+      <AnimatePresence>
+        {teamToKick && (
+          <KickTeam teamToKick={teamToKick} setTeamToKick={setTeamToKick} handleKickTeam={handleKickTeam} />
+        )}
+      </AnimatePresence>
 
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">

@@ -6,36 +6,36 @@ const TeamRegister = ({
   hackathonId,
   hackathonName,
   setRegistered,
-  setOpenTeamRegister
+  setOpenTeamRegister,
+  setTeamId
 }: {
-  registrationDeadline: Date, hackathonId: string, hackathonName: string, setRegistered: (args: boolean) => void, setOpenTeamRegister: (args: boolean) => void
+  registrationDeadline: Date, hackathonId: string, hackathonName: string, setRegistered: (args: boolean) => void, setOpenTeamRegister: (args: boolean) => void, setTeamId: (id: string) => void
 }) => {
 
-    const [teamName, setTeamName] = useState<string>("")
+  const [teamName, setTeamName] = useState<string>("")
 
-    const handleSubmit = async () => {
-        try {
-          const res = await fetch("/api/hackathons/teams/register", 
-              {
-                  method: "POST",
-                  body: JSON.stringify({name: teamName, hackathonId, hackathonName})
-              }
-          ).then(res => res.json())
-
-          if(res.success){
-              setRegistered(true)
-              setOpenTeamRegister(false)
-          }
-  
-          // console.log(res)
-          // console.log(res.message)
-          // console.log(res.data)
-        } catch (error) {
-          console.log(error)
-        } finally{
-          setTeamName("")
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("/api/hackathons/teams/register",
+        {
+          method: "POST",
+          body: JSON.stringify({ name: teamName, hackathonId, hackathonName })
         }
+      ).then(res => res.json())
+
+      if (res.success) {
+        setRegistered(true)
+        if (res.data && res.data._id) {
+          setTeamId(res.data._id);
+        }
+        setOpenTeamRegister(false)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setTeamName("")
     }
+  }
   return (
     <div className="bg-white shadow-md border border-gray-200 rounded-xl p-6 sticky top-20">
       <h2 className="text-xl font-semibold mb-4">

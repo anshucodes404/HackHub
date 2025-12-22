@@ -234,7 +234,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 						<Button type="button" onClick={onClose} variant="secondary">
 							Cancel
 						</Button>
-						<Button type="submit" disabled={saving || uploading}>
+						<Button className="disabled:bg-blue-700" type="submit" disabled={saving || uploading}>
 							{saving ? "Saving..." : "Save"}
 						</Button>
 					</div>

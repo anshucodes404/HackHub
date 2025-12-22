@@ -37,6 +37,7 @@ export async function GET(
       {
         $unwind: {
           path: "$submission",
+          preserveNullAndEmptyArrays: true,
         },
       },
       {

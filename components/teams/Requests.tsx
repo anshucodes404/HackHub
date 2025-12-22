@@ -4,6 +4,7 @@ import RequestRejectedCard from './RequestRejectedCard'
 import { useParams } from 'next/navigation';
 import Loader from '../ui/Loader';
 import { div } from 'framer-motion/client';
+import InviteForm from '../hackathons/InviteForm';
 
 interface RequestsProps{
   _id: string;
@@ -15,6 +16,7 @@ interface RequestsProps{
 
 const Requests = () => {
 
+  const {slug} = useParams()
   const {teamId} = useParams()
   const [requests, setRequests] = useState<RequestsProps[] | []>([]);
   const [loading, setLoading] = useState<boolean>(true);
