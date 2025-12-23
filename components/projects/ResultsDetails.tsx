@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Trophy, MessageSquare, Sparkles } from "lucide-react";
+import { Trophy, MessageSquare, Sparkles, Github, ExternalLink, FileText, Presentation } from "lucide-react";
 import { useParams } from "next/navigation";
 import Loader from "../ui/Loader";
 
@@ -23,6 +23,21 @@ interface TopTeamProps {
   score: number;
 }
 
+interface SubmissionProps {
+  projectName: string;
+  projectDetails: string;
+  githubLink: string;
+  demoLink?: string;
+  pptURL: string;
+  submittedAt: string;
+}
+
+const ensureUrlProtocol = (url: string) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://${url}`;
+};
+
 const ResultsDetails = () => {
   const { slug, teamId } = useParams();
   console.log(slug, " ", teamId);
@@ -31,15 +46,18 @@ const ResultsDetails = () => {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [topTeams, setTopTeams] = useState<TopTeamProps[]>([]);
+  const [submission, setSubmission] = useState<SubmissionProps | null>(null);
 
   const fetchResults = async () => {
     try {
       const res = await fetch(
         `/api/hackathons/teams/result?hackathonId=${slug}&teamId=${teamId}`
       ).then((res) => res.json());
+      console.log(res)
       if (res.success) {
         setTeamResult(res.data.reviewData);
         setTopTeams(res.data.topTeams);
+        setSubmission(res.data.submissionData);
       }
     } catch (error) {
       console.error(error);
@@ -68,8 +86,75 @@ const ResultsDetails = () => {
 
       <div className="space-y-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-2">
+            <FileText className="w-5 h-5 text-blue-500" />
+            <h3 className="font-semibold text-gray-900">Submission Details</h3>
+          </div>
+          {submission ? (
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-1">
+                  Project Name
+                </h4>
+                <p className="font-medium text-gray-900">
+                  {submission.projectName}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-1">
+                  Description
+                </h4>
+                <p className="text-gray-700 text-sm whitespace-pre-wrap">
+                  {submission.projectDetails}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                {submission.githubLink && (
+                  <a
+                    href={submission.githubLink}
+                    target="_blank"
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded border border-gray-200 hover:border-blue-200"
+                  >
+                    <Github className="w-4 h-4" />
+                    <span>Repository</span>
+                  </a>
+                )}
+                {submission.demoLink && (
+                  <a
+                    href={submission.demoLink}
+                    target="_blank"
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded border border-gray-200 hover:border-blue-200"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Live Demo</span>
+                  </a>
+                )}
+                {submission.pptURL && (
+                  <a
+                    href={submission.pptURL}
+                    target="_blank"
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded border border-gray-200 hover:border-blue-200"
+                  >
+                    <Presentation className="w-4 h-4" />
+                    <span>Presentation</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-400 italic text-sm">
+              No submission details available.
+            </p>
+          )}
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {!teamResult ? (
-            <p className="text-gray-400 text-xl font-semibold text-center">No results available for this team.</p>
+            <p className="text-gray-400 text-xl font-semibold text-center">
+              No results available for this team.
+            </p>
           ) : (
             <>
               <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
@@ -119,13 +204,12 @@ const ResultsDetails = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm
-                                ${
-                                  team.rank === 1
-                                    ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                                    : team.rank === 2
-                                    ? "bg-gray-100 text-gray-700 border border-gray-200"
-                                    : "bg-orange-100 text-orange-700 border border-orange-200"
-                                }
+                                ${team.rank === 1
+                        ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                        : team.rank === 2
+                          ? "bg-gray-100 text-gray-700 border border-gray-200"
+                          : "bg-orange-100 text-orange-700 border border-orange-200"
+                      }
                             `}
                   >
                     {team.rank}

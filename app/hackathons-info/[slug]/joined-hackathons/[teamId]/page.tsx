@@ -3,24 +3,50 @@
 import ProjectSubmission from "@/components/projects/ProjectSubmission";
 import Results from "@/components/projects/Results";
 import TeamDetails from "@/components/teams/TeamDetails";
+import Image from "next/image";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
-	const teamId = useParams()?.teamId as string | undefined;
+	const hackathonSlug = useParams()?.slug as string
+	const [hackathonName, setHackathonName] = useState<string>("")
+	const [tagline, setTagline] = useState<string>("")
+	const [bannerImage, setBannerImage] = useState<string>("")
+
+	const hackathonData = async () => {
+		const res = await fetch(`/api/hackathons/${hackathonSlug}`).then(res => res.json())
+		if(res?.success){
+			setHackathonName(res.data.hackathonName)
+			setTagline(res.data.tagline)
+			setBannerImage(res.data.bannerImage)
+		}
+	}
+
+	useEffect(() => {
+		hackathonData()
+	}, [hackathonSlug])
+
 	const [activeTab, setActiveTab] = useState<"details" | "submission" | "results">(
 		"details",
 	);
 
-	console.log(teamId)
 
 	return (
 		<div className="max-w-6xl w-full mt-12 mx-auto">
 			<section>
 				<div className="flex">
+					{bannerImage && (
+						<Image
+						height={40}
+						width={80}
+							src={bannerImage}
+							alt="Hackathon Banner"
+							className="object-cover rounded-md mr-4"
+						/>
+					)}
 					<div className="">
-						<h1 className="text-xl font-bold">{teamId}</h1>
-						<p>hsgdugwe</p>
+						<h1 className="text-xl font-bold">{hackathonName}</h1>
+						<p>{tagline}</p>
 					</div>
 				</div>
 			</section>

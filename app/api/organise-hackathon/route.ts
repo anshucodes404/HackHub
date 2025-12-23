@@ -6,7 +6,7 @@ import { ApiResponse } from "@/utils/ApiResponse";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
-const hackathonReqSchema = z.object({
+export const hackathonReqSchema = z.object({
   hackathonName: z.string(),
   tagline: z.string().optional(),
   description: z.string(),
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     console.log(parsedBody);
 
-    const {_id, collegeEmail, name} = await(await jwtDecode()).json().then(res => res.data)
+    const { _id, collegeEmail, name } = await (await jwtDecode()).json().then(res => res.data)
     console.log(_id)
 
     const {

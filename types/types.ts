@@ -74,6 +74,7 @@ export type DetailedHackathon = {
 	paricipants?: string[];
 	rules?: string;
 	organiser: string;
+	organiserName: string;
 	startAt: Date;
 	duration: string;
 	registrationDeadline: Date;
@@ -88,6 +89,7 @@ export type DetailedHackathon = {
 	status: "draft" | "open" | "ended" | "upcoming";
 	createdAt: Date;
 	updatedAt: Date;
+	prize: string;
 };
 
 export type Invite = {
@@ -103,19 +105,22 @@ export type Invite = {
 };
 
 export type ParticipatedHackathonCardProps = {
-		hackathonId: string;
-		hackathonName: string;
-		bannerImage?: string;
-		teamName: string;
-		teamId: string;
-		startAt: Date;
-		mode: string;
-		location?: string;
-		organiserName: string;
-		minTeamSize: number;
-		maxTeamSize: number;
-		status: string;
-	};
+	hackathonId: string;
+	hackathonName: string;
+	bannerImage?: string;
+	teamName: string;
+	teamId: string;
+	startAt: Date;
+	mode: string;
+	location?: string;
+	organiserName: string;
+	minTeamSize: number;
+	maxTeamSize: number;
+	status: string;
+	hackathonStatus: string;
+	teamStatus: string;
+	role: string;
+};
 
 export type HackathonDetailsProps = {
 	hackathonId: string;

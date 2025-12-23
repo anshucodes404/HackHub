@@ -10,6 +10,7 @@ import Loader from "@/components/ui/Loader";
 import type { DetailedHackathon, HackathonDetailsProps } from "@/types/types";
 import SendMessagetoParticipants from "@/components/hackathons/SendMessage";
 import { useRouter } from "next/navigation";
+import UpdateHackathonModal from "@/components/hackathons/UpdateHackathonModal";
 
 export default function Page() {
   const params = useParams();
@@ -26,6 +27,8 @@ export default function Page() {
   const [registered, setRegistered] = useState<boolean>(false);
   const [openTeamRegister, setOpenTeamRegister] = useState<boolean>(false);
   const [viewTeamDetails, setViewTeamDetails] = useState<boolean>(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   console.log(teamId);
   useEffect(() => {
     if (!slug) {
@@ -72,14 +75,22 @@ export default function Page() {
       {
         origin === "hosted-hackathons" && (
           <div className="flex justify-end mb-6 gap-5 items-center">
-            <Button>Edit Information </Button>
+            <Button onClick={() => setIsEditOpen(true)} >Edit Information </Button>
             <Button className="cursor-pointer" variant="secondary" onClick={() => router.push(`/hackathons-info/${slug}/hosted-hackathons/review`)} >Teams Details</Button>
           </div>
         )
       }
       <HackathonDetails
-        hackathon={{ ...hackathon, hackathonId: hackathon._id }}
+        hackathon={{ ...hackathon, hackathonId: hackathon._id, startAt: hackathon.startAt.toString() }}
       />
+
+      {isEditOpen && hackathon && (
+        <UpdateHackathonModal
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          hackathon={hackathon}
+        />
+      )}
 
       {/* This part appears when called from hackathons list Page */}
       {origin === "" && (
@@ -173,3 +184,4 @@ export default function Page() {
     </div>
   );
 }
+

@@ -29,22 +29,41 @@ export async function GET() {
 			},
 			{ $unwind: "$hackathonDetails" },
 			{
-                $project: {
-                    _id: 0,
-                    hackathonId: "$hackathonDetails._id",
-                    hackathonName: "$hackathonDetails.hackathonName",
-                    bannerImage: "$hackathonDetails.bannerImage",
-                    startAt: "$hackathonDetails.startAt",
-                    mode: "$hackathonDetails.mode",
-                    location: "$hackathonDetails.location",
-                    organiserName: "$hackathonDetails.organiserName",
-                    minTeamSize: "$hackathonDetails.minTeamSize",
-                    maxTeamSize: "$hackathonDetails.maxTeamSize",
-                    status: "$status",
-                    teamName: "$name",
-					teamId: "$_id"
-                }
-            }
+				$project: {
+					_id: 0,
+					hackathonId: "$hackathonDetails._id",
+					hackathonName: "$hackathonDetails.hackathonName",
+					bannerImage: "$hackathonDetails.bannerImage",
+					startAt: "$hackathonDetails.startAt",
+					mode: "$hackathonDetails.mode",
+					location: "$hackathonDetails.location",
+					organiserName: "$hackathonDetails.organiserName",
+					minTeamSize: "$hackathonDetails.minTeamSize",
+					maxTeamSize: "$hackathonDetails.maxTeamSize",
+					hackathonStatus: "$hackathonDetails.status",
+					teamName: "$name",
+					teamId: "$_id",
+					teamStatus: "$status",
+					role: {
+						$arrayElemAt: [
+							{
+								$map: {
+									input: {
+										$filter: {
+											input: "$members",
+											as: "member",
+											cond: { $eq: ["$$member.userId", userID] }
+										}
+									},
+									as: "m",
+									in: "$$m.role"
+								}
+							},
+							0
+						]
+					}
+				}
+			}
 		]);
 
 		console.log(hackathons)

@@ -163,7 +163,7 @@ const JudgeDashboard: React.FC<JudgeDashboardProps> = ({ hackathonId }) => {
             className="w-full pl-10 pr-4 py-2 transition-all text-sm"
           />
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex text-nowrap items-center gap-2 text-sm text-gray-500">
           <Filter className="w-4 h-4" />
           <span>Showing {filteredTeams.length} teams</span>
         </div>
