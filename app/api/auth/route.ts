@@ -93,7 +93,7 @@ export async function POST(req: Request) {
         );
       }
 
-      const { name,profileImageUrl, collegeEmail, email, otp, mobileNumber, hostelEmail, branch, hostel, studyYear, githubLink, LinkedInLink } =
+      const { name, profileImageUrl, collegeEmail, email, otp, mobileNumber, hostelEmail, branch, hostel, studyYear, githubLink, LinkedInLink } =
         parsedBody.data;
 
       const otpDoc = await OTP.findOne({ collegeEmail });
