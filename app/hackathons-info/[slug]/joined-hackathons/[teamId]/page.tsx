@@ -3,6 +3,7 @@
 import ProjectSubmission from "@/components/projects/ProjectSubmission";
 import Results from "@/components/projects/Results";
 import TeamDetails from "@/components/teams/TeamDetails";
+import Loader from "@/components/ui/Loader";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -12,13 +13,20 @@ const page = () => {
 	const [hackathonName, setHackathonName] = useState<string>("")
 	const [tagline, setTagline] = useState<string>("")
 	const [bannerImage, setBannerImage] = useState<string>("")
+	const [isLoading, setIsLoading] = useState<boolean>(true)
 
 	const hackathonData = async () => {
-		const res = await fetch(`/api/hackathons/${hackathonSlug}`).then(res => res.json())
-		if(res?.success){
-			setHackathonName(res.data.hackathonName)
-			setTagline(res.data.tagline)
-			setBannerImage(res.data.bannerImage)
+		try {
+			const res = await fetch(`/api/hackathons/${hackathonSlug}`).then(res => res.json())
+			if(res?.success){
+				setHackathonName(res.data.hackathonName)
+				setTagline(res.data.tagline)
+				setBannerImage(res.data.bannerImage)
+			}
+		} catch (error) {
+			console.error(error)	
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
@@ -29,6 +37,14 @@ const page = () => {
 	const [activeTab, setActiveTab] = useState<"details" | "submission" | "results">(
 		"details",
 	);
+
+	if(isLoading){
+		return (
+			<div className="flex justify-center items-center h-[70vh]">
+				<Loader fullscreen />
+			</div>
+		)
+	}
 
 
 	return (

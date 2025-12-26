@@ -52,7 +52,7 @@ const HackathonCard = ({
 
       <div className="relative h-48 md:h-full md:w-72 md:shrink-0 bg-gray-100">
         <Image
-          src={bannerImage || "/placeholder.jpg"}
+          src={bannerImage || "/sa"}
           alt={hackathonName}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -60,7 +60,7 @@ const HackathonCard = ({
         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
         <div className="absolute top-3 left-3">
           <span className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white rounded-full 
-                ${status === 'upcoming' ? 'bg-emerald-500' : status === 'ended' ? 'bg-red-500' : 'bg-blue-500'} 
+                ${status === 'draft' ? 'bg-gray-500' : status === 'ended' ? 'bg-red-500' : 'bg-green-700'} 
                 shadow-sm`}>
             {status}
           </span>
@@ -109,7 +109,7 @@ const HackathonCard = ({
             <span className="text-xs text-gray-400 font-medium uppercase">Date</span>
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
               <Calendar size={16} className="text-purple-500" />
-              <span>{new Date(startAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+              <span>{new Date(startAt).toLocaleDateString()}</span>
             </div>
           </div>
 
@@ -134,7 +134,7 @@ const HackathonCard = ({
         <div className="flex items-center justify-between pt-4 mt-auto">
           <div className="hidden md:flex gap-2">
             {tags?.slice(0, 3).map((tag, idx) => (
-              <span key={idx} className="px-2.5 py-1 text-xs bg-gray-50 text-gray-600 rounded-md border border-gray-100">
+              <span key={idx} className="px-2.5 py-1 text-xs bg-gray-100 text-gray-600 rounded-md border border-gray-100">
                 {tag}
               </span>
             ))}

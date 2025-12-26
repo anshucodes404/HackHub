@@ -38,22 +38,26 @@ function Page() {
    console.log("TeamId: ", params.inviteId);
 
    const handleAccept = async () => {
+      setLoading(true)
       const res = await fetch(`/api/accept-decline-invite/${params.inviteId}`, {
          method: "POST",
          body: JSON.stringify({ action: "accept", teamId: invite?.teamId }),
       }).then((res) => res.json());
       if (res.success) {
          addToast("Invitation accepted!");
-         router.push("/hackathons");
+         setLoading(false)
+         router.push("/participated-hackathons");
       }
    };
 
    const handleDecline = async () => {
+      setLoading(true)
       await fetch(`/api/accept-decline-invite/${params.inviteId}`, {
          method: "POST",
          body: JSON.stringify({ action: "decline", teamId: invite?.teamId }),
       }).then((res) => res.json());
       addToast("Invitation declined.");
+      setLoading(false)
       router.push("/");
    };
 
@@ -95,18 +99,20 @@ function Page() {
             <div className="mb-4">
                <div className="font-semibold text-gray-700 mb-1">Rules:</div>
                <ul className="list-disc list-inside text-sm text-gray-600">
-                  {invite?.rules?.map((rule: string, idx: number) => (
-                     // biome-ignore lint/suspicious/noArrayIndexKey: <>
+                  {
+                     invite?.rules.length === 0 ? <li>No specific rules provided.</li> : (invite?.rules?.map((rule: string, idx: number) => (
                      <li key={idx}>{rule}</li>
-                  ))}
+                  )))
+                  }
+                  
                </ul>
             </div>
             <div className="flex gap-4 mt-6">
-               <Button className="flex-1" onClick={handleAccept}>
+               <Button className="flex-1 cursor-pointer" onClick={handleAccept}>
                   Accept Invitation
                </Button>
                <Button
-                  className="flex-1"
+                  className="flex-1 cursor-pointer"
                   variant="danger"
                   onClick={handleDecline}
                >

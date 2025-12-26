@@ -29,6 +29,8 @@ export async function POST(
 			});
 		}
 
+		const invite = await Invite.findById(inviteId)
+
 		if (action === "accept") {
 			const member = {
 				userId: _id,
@@ -54,10 +56,12 @@ export async function POST(
 			}
 			// console.log(team)
 
-			await Invite.findByIdAndUpdate(inviteId, {
-				$set: { status: "accepted" },
-			});
-
+			invite.status.map((inv: {email: string, status: string}) => {
+				if(inv.email === collegeEmail){
+					inv.status = "accepted"
+				}
+			})
+			await invite.save()
 			const leader = team.members.filter(
 				(member: { role: string }) => member.role === "leader",
 			)[0];
@@ -75,7 +79,9 @@ export async function POST(
 				status: 201,
 			});
 		} else {  //? If declined
-			const team = await Team.findById(inviteId);
+	
+			const team = await Team.findById(teamId);
+			
 			if (!team) {
 				return NextResponse.json(new ApiResponse(false, "Team not found"), {
 					status: 404,
@@ -86,9 +92,15 @@ export async function POST(
 				(member: { role: string }) => member.role === "leader",
 			)[0];
 
-			await Invite.findByIdAndUpdate(inviteId, {
-				$set: { status: "declined" },
-			});
+			invite.status.map((inv: {email: string, status: string}) => {
+				if(inv.email === collegeEmail){
+					console.log("rejected")
+					inv.status = "rejected"
+				}
+			})
+			await invite.save()
+
+			console.log(invite)
 
 			const res = await sendDeclineEmail({
 				teamLeaderName: leader.name,

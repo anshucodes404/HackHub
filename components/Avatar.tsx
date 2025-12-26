@@ -57,7 +57,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
               href="/profile"
               className="flex items-center w-full rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
-              <User className="w-4 h-4 mr-2" />
+              <User className="w-4 h-4 mr-2 text-blue-600" />
               Profile
             </Link>
 
@@ -66,7 +66,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
               href="/participated-hackathons"
               className="flex items-center w-full rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
-              <Lightbulb className="w-4 h-4 mr-2" />
+              <Lightbulb className="w-4 h-4 mr-2 text-yellow-500" />
               Joined Hacks
             </Link>
 
@@ -75,7 +75,7 @@ const Avatar: React.FC<AvatarProps> = ({ name, src }) => {
               onClick={handleClose}
               className="flex items-center w-full rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
-              <Rocket className="w-4 h-4 mr-2" />
+              <Rocket className="w-4 h-4 mr-2 text-green-600" />
               Hosted Hacks
             </Link>
 

@@ -58,7 +58,6 @@ function Aside() {
 		searchParams,
 	]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <>
 	useEffect(() => {
 		updateFilters();
 	}, [selectedMode, selectedStatus, selectedTags, router]);
@@ -146,10 +145,10 @@ function Aside() {
 									key={tag}
 									type="button"
 									onClick={() => handleTagClick(tag)}
-									className={`px-2 py-1 text-xs rounded-full transition-colors ${
+									className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
 										selectedTags.includes(tag)
-											? "bg-blue-600 text-white"
-											: "bg-blue-100 text-blue-600"
+											? "bg-blue-100 text-blue-600"
+											: "bg-gray-100 text-gray-600"
 									}`}
 								>
 									{tag}

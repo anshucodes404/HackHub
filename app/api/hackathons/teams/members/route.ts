@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
-import { Team } from "@/models/team.model";
+import { ITeamMember, Team } from "@/models/team.model";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -29,5 +29,32 @@ export async function GET(req: NextRequest){
         return NextResponse.json(
             new ApiResponse(false, "Something went wrong", null, error), {status: 500}
         )
+    }
+}
+
+
+export async function DELETE(req: NextRequest){
+    try {
+        await dbConnect();
+        const {collegeEmail, teamId} = await req.json();
+
+        const team = await Team.findById(teamId);
+
+        if(!team){
+            return NextResponse.json(
+                new ApiResponse(false, "Team not found"), {status: 404}
+            )
+        }
+
+        team.members = team.members.filter((member: ITeamMember) => member.collegeEmail !== collegeEmail);
+        await team.save();
+
+        return NextResponse.json(
+            new ApiResponse(true, "Member kicked out successfully"), {status: 200}
+        )
+    } catch (error) {
+         return NextResponse.json(
+                new ApiResponse(false, "Something went wrong", null, error), {status: 500}
+            )
     }
 }

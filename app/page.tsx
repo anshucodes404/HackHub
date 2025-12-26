@@ -18,7 +18,6 @@ export default function Home() {
       <main className="pt-12">
         <Hero />
         <Features />
-        <PopularHackathons />
         <section className="py-20 bg-primary/5">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">

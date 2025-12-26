@@ -28,6 +28,7 @@ export default function Page() {
   const [openTeamRegister, setOpenTeamRegister] = useState<boolean>(false);
   const [viewTeamDetails, setViewTeamDetails] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isLeader, setIsLeader] = useState<boolean>(false);
 
   console.log(teamId);
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function Page() {
       try {
         const res = await fetch(`/api/hackathons/${slug}`, {
           method: "GET",
-        }).then((r) => r.json());
+        }).then((res) => res.json());
         if (!res?.success) {
           setError("Hackathon not found");
           return;
@@ -49,6 +50,7 @@ export default function Page() {
         setRegistered(res.data.registered);
         setHackathon(res.data as DetailedHackathon);
         setTeamId(res.data.teamId || "");
+        setIsLeader(res.data.isLeader || false);
       } catch (err) {
         setError((err as Error).message || "Failed to load hackathon");
       } finally {
@@ -58,6 +60,26 @@ export default function Page() {
 
     getHackathonData();
   }, [slug]);
+
+  const publishHackathon = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/hackathons/${slug}/publish`, {
+        method: "PATCH",
+      }).then(res => res.json());
+
+      if (!res?.success) {
+        setError("Failed to publish hackathon")
+      } else {
+        window.location.reload()
+       
+      }
+    } catch (error) {
+      setError("Failed to publish hackathon")
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading) return <Loader fullscreen />;
 
@@ -75,7 +97,11 @@ export default function Page() {
       {
         origin === "hosted-hackathons" && (
           <div className="flex justify-end mb-6 gap-5 items-center">
-            <Button onClick={() => setIsEditOpen(true)} >Edit Information </Button>
+            {
+              hackathon.status === "draft" && <Button variant="success" className="cursor-pointer" onClick={() => publishHackathon()}>Publish</Button>
+            }
+
+            <Button className="cursor-pointer" onClick={() => setIsEditOpen(true)} >Edit Information </Button>
             <Button className="cursor-pointer" variant="secondary" onClick={() => router.push(`/hackathons-info/${slug}/hosted-hackathons/review`)} >Teams Details</Button>
           </div>
         )
@@ -104,13 +130,13 @@ export default function Page() {
             </Button>
           ) : (
             <div className="w-full">
-              <div className="mb-10">
+             { isLeader && <div className="mb-10">
                 <InviteForm
                   hackathonId={hackathon._id}
                   hackathonName={hackathon.hackathonName}
                   rules={hackathon.rules}
                 />
-              </div>
+              </div>}
               <div className="flex justify-center">
                 <Button
                   variant="success"
@@ -151,13 +177,13 @@ export default function Page() {
             />
           ) : (
             <div className="w-full">
-              <div className="mb-10">
+              { isLeader && <div className="mb-10">
                 <InviteForm
                   hackathonId={hackathon._id}
                   hackathonName={hackathon.hackathonName}
                   rules={hackathon.rules}
                 />
-              </div>
+              </div>}
               <div className="flex justify-center">
                 <Button
                   variant="success"

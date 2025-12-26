@@ -13,6 +13,7 @@ export default function Page() {
   const [isCreating, setIsCreating] = useState(false);
   const [mode, setMode] = useState("online");
   const [bannerImage, setBannerImage] = useState<string>("")
+  const [status, setStatus] = useState<"published" | "draft">("published")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -21,6 +22,9 @@ export default function Page() {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       formData.append("bannerImage", bannerImage as string)
+      formData.append("status", status)
+
+      console.log(formData)
 
       const res = await fetch("/api/organise-hackathon", {
         method: "POST",
@@ -80,6 +84,7 @@ export default function Page() {
               placeholder="Enter hackathon name"
             />
             <Input
+            
               name="tagline"
               label="Short Tagline"
               placeholder="E.g. Build. Learn. Compete."
@@ -88,6 +93,7 @@ export default function Page() {
 
           <div className="mt-6">
             <Textarea
+            required
               name="description"
               label="Description"
               placeholder="Describe your hackathon, themes, and goals..."
@@ -125,7 +131,7 @@ export default function Page() {
           <div className="mt-6">
             {mode === "inplace" && (
               <Input
-              required
+              required={mode === "inplace"}
                 name="location"
                 label="Location"
                 placeholder="Enter hackathon venue"
@@ -137,7 +143,7 @@ export default function Page() {
 
         <Section title="Media & Branding">
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-gray-700">Hackathon Banner</span>
+            <span className="text-sm font-medium text-gray-700">Hackathon Banner{" "}<span className="text-red-600">*</span> </span>
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer group text-center relative overflow-hidden">
               <Input
               required
@@ -159,16 +165,18 @@ export default function Page() {
         <Section title="Schedule">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Input
+            required
               name="startAt"
               label="Start Date and Time"
               type="datetime-local"
             />
             <Input
+            required
               name="registrationDeadline"
               label="Registration Deadline"
               type="date"
             />
-            <Input name="duration" label="Duration" placeholder="e.g. 48 hours" />
+            <Input required name="duration" label="Duration" placeholder="e.g. 48 hours" />
           </div>
         </Section>
 
@@ -176,12 +184,14 @@ export default function Page() {
         <Section title="Team & Eligibility">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
+            required
               name="minTeamSize"
               label="Min Team Size"
               placeholder="e.g. 2"
               type="number"
             />
             <Input
+            required
               name="maxTeamSize"
               label="Max Team Size"
               placeholder="e.g. 5"
@@ -191,6 +201,7 @@ export default function Page() {
 
           <div className="mt-6">
             <Textarea
+            required
               name="criteria"
               label="Eligibility Criteria"
               placeholder="e.g. College students only"
@@ -199,6 +210,7 @@ export default function Page() {
 
           <div className="mt-6">
             <Input
+            required
               name="prize"
               label="Prize"
               placeholder="e.g. 50,000"
@@ -211,11 +223,13 @@ export default function Page() {
         <Section title="Organizer Details">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
+            required
               name="organiser"
               label="Organizer / Society Name"
               placeholder="e.g. Tech Club"
             />
             <Input
+            required
               name="organiserEmail"
               label="Contact Email"
               placeholder="example@email.com"
@@ -240,14 +254,14 @@ export default function Page() {
           <Button
             variant="secondary"
             type="submit"
-
+            onClick={() => setStatus("draft")}
           >
             Save as Draft
           </Button>
 
           <Button
             type="submit"
-
+            onClick={() => setStatus("published")}
           >
             Publish Hackathon
           </Button>

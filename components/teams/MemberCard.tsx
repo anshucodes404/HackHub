@@ -2,6 +2,7 @@ import { UserRoundX } from "lucide-react";
 import ProfileImageView from "../ProfileImageView";
 import { useUser } from "../UserContext";
 import RoleTag from "./RoleTag";
+import { memberToKickProps } from "../KickMember";
 
 interface MemberCardProps {
 	src: string;
@@ -9,7 +10,7 @@ interface MemberCardProps {
 	role_user: "member" | "leader";
 	size?: number;
 	collegeEmail: string;
-	onKickOut?: (email: string) => void;
+	setMemberToKick: (member: memberToKickProps) => void;
 }
 
 const MemberCard = ({
@@ -18,7 +19,7 @@ const MemberCard = ({
 	role_user,
 	size,
 	collegeEmail,
-	onKickOut,
+	setMemberToKick,
 }: MemberCardProps) => {
 	const { user } = useUser();
 
@@ -28,12 +29,6 @@ const MemberCard = ({
 	const leaderCard = role_user === "leader";
 	const canBeKickedOut = !userIsCurrent && !leaderCard; //yaha par un sab card me kick out button show hoga jo current user nhi hai aur jinka role member hai
 
-
-	const handleKickOut = () => {
-		if (onKickOut) {
-			onKickOut(collegeEmail);
-		}
-	};
 
 	return (
 		<div className="border-gray-200 border rounded-lg bg-gray-200/70 mb-2.5">
@@ -47,12 +42,12 @@ const MemberCard = ({
 				</div>
 				{canBeKickedOut && (
 					<button
-						onClick={handleKickOut}
+						onClick={() => setMemberToKick({ name, email: collegeEmail })}
 						className="pr-5 cursor-pointer transition"
 						title="Kick Out"
 						type="button"
 					>
-						<UserRoundX className="size-5 hover:text-red-600 text-gray-600" />
+						<UserRoundX className="size-5 hover:text-red-600 text-red-400 transition-all duration-200" />
 					</button>
 				)}
 			</div>

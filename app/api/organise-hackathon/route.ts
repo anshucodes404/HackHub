@@ -24,7 +24,8 @@ export const hackathonReqSchema = z.object({
   tags: z.string(),
   mode: z.string(),
   prize: z.string(),
-  location: z.string().optional()
+  location: z.string().optional(),
+  status: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -63,7 +64,8 @@ export async function POST(req: NextRequest) {
       tags,
       mode,
       prize,
-      location
+      location,
+      status,
     } = parsedBody.data;
 
     console.log(tags);
@@ -91,7 +93,8 @@ export async function POST(req: NextRequest) {
       tags: tagArray,
       mode,
       prize,
-      location
+      location,
+      status
     });
 
     if (!hackathon) {

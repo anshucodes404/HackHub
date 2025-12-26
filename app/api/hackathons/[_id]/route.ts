@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import jwtDecode from "@/lib/jwtDecode";
 import { Hackathon } from "@/models/hackathon.model";
-import { Team } from "@/models/team.model";
+import { ITeamMember, Team } from "@/models/team.model";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { hackathonReqSchema } from "../../organise-hackathon/route";
@@ -16,9 +16,9 @@ export async function GET(
       res.json().then((data) => data.data)
     );
     console.log("Request received");
-    // const { collegeEmail } = await (await jwtDecode())
-    //   .json()
-    //   .then((res) => res.data);
+    const { collegeEmail } = await (await jwtDecode())
+      .json()
+      .then((res) => res.data);
     await dbConnect();
 
     const hackathon = await Hackathon.findById(_id);
@@ -36,12 +36,19 @@ export async function GET(
     });
     console.log(userTeam);
     const registered = userTeam ? true : false;
+    const isLeader = userTeam
+      ? userTeam.members.some(
+        (member: ITeamMember) =>
+          member.collegeEmail === collegeEmail && member.role === "leader"
+      )
+      : false;
 
     return NextResponse.json(
       new ApiResponse(true, "Hackathon corresponding the ID found", {
         ...hackathon.toObject(),
         registered,
         teamId: userTeam?._id || null,
+        isLeader
       }),
       { status: 200 }
     );
