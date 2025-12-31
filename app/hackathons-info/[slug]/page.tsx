@@ -11,11 +11,14 @@ import type { DetailedHackathon, HackathonDetailsProps } from "@/types/types";
 import SendMessagetoParticipants from "@/components/hackathons/SendMessage";
 import { useRouter } from "next/navigation";
 import UpdateHackathonModal from "@/components/hackathons/UpdateHackathonModal";
+import OCMembers from "@/components/hackathons-info/OCMembers";
+import { useUser } from "@/components/UserContext";
 
 export default function Page() {
   const params = useParams();
   const search = useSearchParams();
   const router = useRouter();
+  const {user} = useUser()
 
   const slug = (params?.slug as string) ?? "";
   const origin = search.get("origin") ?? "";
@@ -29,6 +32,7 @@ export default function Page() {
   const [viewTeamDetails, setViewTeamDetails] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isLeader, setIsLeader] = useState<boolean>(false);
+  const [ocMembersOpen, setOcMembersOpen] = useState<boolean>(false);
 
   console.log(teamId);
   useEffect(() => {
@@ -72,7 +76,7 @@ export default function Page() {
         setError("Failed to publish hackathon")
       } else {
         window.location.reload()
-       
+
       }
     } catch (error) {
       setError("Failed to publish hackathon")
@@ -95,14 +99,19 @@ export default function Page() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 mt-12">
       {
-        origin === "hosted-hackathons" && (
-          <div className="flex justify-end mb-6 gap-5 items-center">
+        origin === "hosted-hackathons" && user?._id == hackathon.organiser && (
+          <div className="flex justify-end mb-6 gap-5 items-center relative">
             {
               hackathon.status === "draft" && <Button variant="success" className="cursor-pointer" onClick={() => publishHackathon()}>Publish</Button>
             }
-
+            <Button className="cursor-pointer" onClick={() => setOcMembersOpen(!ocMembersOpen)}>OC Members</Button>
             <Button className="cursor-pointer" onClick={() => setIsEditOpen(true)} >Edit Information </Button>
-            <Button className="cursor-pointer" variant="secondary" onClick={() => router.push(`/hackathons-info/${slug}/hosted-hackathons/review`)} >Teams Details</Button>
+            <Button className="cursor-pointer" variant="secondary" onClick={() => router.push(`/hackathons-info/${slug}/hosted-hackathons/review`)} >Teams</Button>
+            
+              <div className="absolute top-14 right-44">
+                {ocMembersOpen && <OCMembers setOcMembersOpen={setOcMembersOpen} />}
+              </div>
+            
           </div>
         )
       }
@@ -130,7 +139,7 @@ export default function Page() {
             </Button>
           ) : (
             <div className="w-full">
-             { isLeader && <div className="mb-10">
+              {isLeader && <div className="mb-10">
                 <InviteForm
                   hackathonId={hackathon._id}
                   hackathonName={hackathon.hackathonName}
@@ -177,7 +186,7 @@ export default function Page() {
             />
           ) : (
             <div className="w-full">
-              { isLeader && <div className="mb-10">
+              {isLeader && <div className="mb-10">
                 <InviteForm
                   hackathonId={hackathon._id}
                   hackathonName={hackathon.hackathonName}
@@ -202,7 +211,7 @@ export default function Page() {
       )}
 
       {/* this part will appear when called from hosted hackathons page */}
-      {origin === "hosted-hackathons" && (
+      {origin === "hosted-hackathons" && user?._id == hackathon.organiser &&  (
         <div>
           <SendMessagetoParticipants hackathonId={slug} />
         </div>

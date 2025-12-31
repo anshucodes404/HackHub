@@ -106,7 +106,7 @@ const page = () => {
 								>
 									<option value="all">All</option>
 									<option value="upcoming">Upcoming</option>
-									<option value="open">Ongoing</option>
+									<option value="published">Published</option>
 									<option value="ended">Ended</option>
 								</select>
 								<Funnel className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />

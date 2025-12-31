@@ -32,11 +32,6 @@ interface SubmissionProps {
   submittedAt: string;
 }
 
-const ensureUrlProtocol = (url: string) => {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `https://${url}`;
-};
 
 const ResultsDetails = () => {
   const { slug, teamId } = useParams();
@@ -110,7 +105,7 @@ const ResultsDetails = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 {submission.githubLink && (
                   <a
                     href={submission.githubLink}
@@ -121,20 +116,21 @@ const ResultsDetails = () => {
                     <span>Repository</span>
                   </a>
                 )}
-                {submission.demoLink && (
+                
                   <a
                     href={submission.demoLink}
                     target="_blank"
                     className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded border border-gray-200 hover:border-blue-200"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>Live Demo</span>
+                    <span>{submission.demoLink ? "Live Demo" : "No Link"}</span>
                   </a>
-                )}
+                
                 {submission.pptURL && (
                   <a
-                    href={submission.pptURL}
+                    href={submission.pptURL.trim()}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded border border-gray-200 hover:border-blue-200"
                   >
                     <Presentation className="w-4 h-4" />

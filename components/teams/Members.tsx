@@ -7,6 +7,7 @@ import { useToast } from "../ToastContext";
 import { AnimatePresence } from "framer-motion";
 import KickMember, { memberToKickProps } from "../KickMember";
 import { useUser } from "../UserContext";
+import { ITeamMember } from "@/models/team.model";
 const Members = ({setIsLeader}: {setIsLeader: (isLeader: boolean) => void}) => {
 
 	const {addToast} = useToast()
@@ -52,7 +53,7 @@ const Members = ({setIsLeader}: {setIsLeader: (isLeader: boolean) => void}) => {
 			console.log(res)
 			console.log(res.data.members)
 			setTeam(res.data);
-			setIsLeader(res.data.members.some((member: any) => member.collegeEmail === user?.collegeEmail && member.role === 'leader'))
+			setIsLeader(res.data.members.some((member: ITeamMember) => member.collegeEmail === user?.collegeEmail && member.role === 'leader'))
 		} catch (error) {
 			console.error(error)
 		} finally {
@@ -84,7 +85,7 @@ const Members = ({setIsLeader}: {setIsLeader: (isLeader: boolean) => void}) => {
 						team?.members.map((member) => (
 							<MemberCard
 								key={member.collegeEmail}
-								src={member.userId.profileImageUrl || ""}
+								src={member.userId?.profileImageUrl || ""}
 								name={member.name}
 								size={50}
 								role_user={member.role}

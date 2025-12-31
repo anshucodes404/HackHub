@@ -1,8 +1,8 @@
 
 
-export default async function uploadOnCloudinary (file: File, folder: string){
+export default async function uploadOnCloudinary(file: File, folder: string, resourceType: "image" | "raw"  = "image") {
 	console.log("Upload started");
-	const responseData = await fetch(`/api/cloudinary?folder=${folder}`).then((res) => res.json());
+	const responseData = await fetch(`/api/cloudinary?folder=${folder}&resourceType=${resourceType}`).then((res) => res.json());
 
 	if (!responseData.success) {
 		console.error("Failed to get signature:", responseData.message);
@@ -16,6 +16,7 @@ export default async function uploadOnCloudinary (file: File, folder: string){
 	form.append("timestamp", signedURL.timestamp);
 	form.append("folder", signedURL.folder);
 	form.append("signature", signedURL.signature);
+	form.append("resource_type", resourceType);
 
 	try {
 		const res = await fetch(signedURL.uploadUrl, {
@@ -23,7 +24,8 @@ export default async function uploadOnCloudinary (file: File, folder: string){
 			body: form,
 		}).then((res) => res.json());
 		console.log(res);
-		return res.secure_url;
+		const url = res.secure_url?.trim();
+		return url;
 	} catch (error) {
 		console.error("Failed to upload image", error);
 	}

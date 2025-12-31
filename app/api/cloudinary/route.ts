@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
 	}
 
 	const folder = req.nextUrl.searchParams?.get("folder");
+	const resourceType = req.nextUrl.searchParams?.get("resourceType") || "image";
 
 	const authResponse = await jwtDecode();
 	const authData = await authResponse.json();
@@ -33,8 +34,8 @@ export async function GET(req: NextRequest) {
 	});
 
 	const paramsToSign = {
-		timestamp: Math.floor(Date.now() / 1000),
 		folder: folder,
+		timestamp: Math.floor(Date.now() / 1000),
 	};
 
 	const signature = cloudinary.utils.api_sign_request(
@@ -42,8 +43,7 @@ export async function GET(req: NextRequest) {
 		API_SECRET as string,
 	);
 
-
-	const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+	const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`;
 
 	return NextResponse.json({
 		success: true,
@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
 			cloudName: CLOUD_NAME,
 			timestamp: paramsToSign.timestamp,
 			folder: paramsToSign.folder,
+			resourceType: resourceType,
 		},
 	});
 }

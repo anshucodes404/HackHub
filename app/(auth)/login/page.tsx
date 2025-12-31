@@ -7,10 +7,13 @@ import { Button, Input } from "@/components/ui";
 import { SendHorizontal } from "lucide-react";
 import { useUser } from "@/components/UserContext";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastContext";
+import Sending from "@/components/ui/Sending";
 
 const Page = () => {
 	const { user } = useUser();
 	const router = useRouter();
+	const {addToast} = useToast()
 
 	useEffect(() => {
 		if (user) router.push("/hackathons");
@@ -40,6 +43,9 @@ const Page = () => {
 		if (res.success) {
 			loginUser.mode = data.mode;
 			setOtpSent(true);
+		} else {
+			addToast(res.message || "Failed to send OTP");
+			router.push("/signup");
 		}
 
 		console.log(data);
@@ -52,7 +58,7 @@ const Page = () => {
 					<section className="text-black font-bold text-2xl text-center mb-3">
 						Log In to HackHub
 					</section>
-					<hr className="text-gray-400 mb-3" />
+					<hr className="text-gray-200 mb-3" />
 					<Input
 						label="College Email"
 						name="collegeEmail"
@@ -69,6 +75,7 @@ const Page = () => {
 						>
 							{!isSending ? "Get OTP" : "Sending..."}
 							{!isSending && <SendHorizontal size={16} />}
+							
 						</Button>
 					</div>
 				</div>

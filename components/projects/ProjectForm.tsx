@@ -69,7 +69,7 @@ const ProjectForm = () => {
       file.size <= 10 * 1024 * 1024
     ) {
       addToast("Uploading presentation, please wait...");
-      setPptURL(await uploadOnCloudinary(file, "project_presentations"));
+      setPptURL(await uploadOnCloudinary(file, "project_presentations", "raw"));
       addToast("Presentation uploaded successfully");
       setUploaded(true);
     } else {

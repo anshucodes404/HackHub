@@ -1,14 +1,17 @@
 "use client";
 import { useState } from "react";
 import { Button, ErrorMessage, Textarea } from "../ui";
+import { useToast } from "../ToastContext";
 
 const SendMessage = ({ hackathonId }: { hackathonId: string }) => {
 	const [sendToParticipants, setSendToParticipants] = useState<boolean>(true);
 	const [message, setMessage] = useState<string>("");
 	const [sending, setSending] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
+	const {addToast} = useToast();
 	const handleSubmit = async () => {
 		try {
+			setError("")
 			setSending(true);
 			const res = await fetch("/api/send-message", {
 				method: "POST",
@@ -22,11 +25,14 @@ const SendMessage = ({ hackathonId }: { hackathonId: string }) => {
 
 			if (!res.success) {
 				setError(res.message);
+			} else {
+				addToast("Message sent successfully");
 			}
 		} catch (error) {
 			setError(error as string);
 		} finally {
 			setSending(false);
+			setMessage("");
 		}
 	};
 

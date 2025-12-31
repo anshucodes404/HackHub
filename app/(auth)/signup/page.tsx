@@ -75,7 +75,7 @@ const Page = () => {
                   Sign Up to HackHub
                </section>
 
-               <hr className="mb-3 text-gray-400" />
+               <hr className="mb-3 text-gray-200" />
 
                <Section title="Personal Details">
                   <div className="grid md:grid-cols-2 gap-5 mb-3">
@@ -93,7 +93,7 @@ const Page = () => {
                         name="mobileNumber"
                         onChange={handleChange}
                         value={signInUser.mobileNumber}
-                        type="text"
+                        type="number"
                         placeholder="Enter mobile number"
                      />
                   </div>

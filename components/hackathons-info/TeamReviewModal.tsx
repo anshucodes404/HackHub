@@ -106,20 +106,21 @@ const TeamReviewModal: React.FC<TeamReviewModalProps> = ({
                         View Code
                       </a>
                     )}
-                    {submission.demoLink && (
+                    
                       <a
                         href={submission.demoLink}
                         target="_blank"
                         className="flex items-center justify-center gap-2 p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        Live Demo
+                        {submission.demoLink ? "View Demo" : "No Demo Link"}
                       </a>
-                    )}
+                    
                     {submission.pptURL && (
                       <a
-                        href={submission.pptURL}
+                        href={submission.pptURL.trim()}
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="col-span-2 flex items-center justify-center gap-2 p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
                       >
                         <FileText className="w-4 h-4" />

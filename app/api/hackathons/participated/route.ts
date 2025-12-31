@@ -41,6 +41,7 @@ export async function GET() {
 					minTeamSize: "$hackathonDetails.minTeamSize",
 					maxTeamSize: "$hackathonDetails.maxTeamSize",
 					hackathonStatus: "$hackathonDetails.status",
+					status: "$hackathonDetails.status",
 					teamName: "$name",
 					teamId: "$_id",
 					teamStatus: "$status",

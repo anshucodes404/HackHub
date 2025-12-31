@@ -1,9 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
 import { Hackathon } from "@/models/hackathon.model";
 import { ApiResponse } from "@/utils/ApiResponse";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(req: NextResponse, { params }: { params: Promise<{ _id: string }> }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ _id: string }> }) {
     try {
         await dbConnect()
         const { _id } = await params;

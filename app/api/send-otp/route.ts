@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
 	try {
     console.log("OTP request")
 		const existingUser: IUser | null = await User.findOne({ collegeEmail });
+		// console.log(existingUser)
+
+		// if(!existingUser){
+		// 	return NextResponse.json(new ApiResponse(false, "User does not exist, Sign up first"), {status: 307});
+		// }
+
 		const mode = existingUser ? "login" : "signup";
 
 		const otp = Math.floor(100000 + Math.random() * 900000).toString();

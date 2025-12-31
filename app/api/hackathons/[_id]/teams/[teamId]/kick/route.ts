@@ -4,12 +4,12 @@ import { Review } from "@/models/review.model";
 import { Submission } from "@/models/submission.model";
 import { ITeamMember, Team } from "@/models/team.model";
 import { ApiResponse } from "@/utils/ApiResponse";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, {params}: {params: {_id: string, teamId: string}}){
+export async function DELETE(req: NextRequest, {params}: {params: Promise<{_id: string, teamId: string}>}){
     try {
         await dbConnect();
-        const { _id, teamId } = params;
+        const { _id, teamId } = await params;
         const team = await Team.findById(teamId);
 
         if(!team){
