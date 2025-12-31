@@ -6,6 +6,7 @@ import Button from '../ui/Button';
 import { useParams } from 'next/navigation';
 import { ErrorMessage } from '../ui';
 import Loader from '../ui/Loader';
+import { useUser } from '../UserContext';
 
 type OCMembersProps = {
     _id: string;
@@ -21,6 +22,7 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
     const [ocMembers, setOcMembers] = useState<OCMembersProps[] | []>([]);
     const [error, setError] = useState<string | null>(null);
     const [email, setEmail] = useState<string>("");
+    const { user } = useUser();
 
     useEffect(() => {
         getOcMembers();
@@ -43,7 +45,7 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
         }
     }
 
-    const removeMember = async(email: string) => {
+    const removeMember = async (email: string) => {
         try {
             setError(null);
             const res = await fetch(`/api/hackathons/${slug}/oc-members`, {
@@ -51,11 +53,11 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({email})
+                body: JSON.stringify({ email })
             }).then(res => res.json());
 
-            if(res.success){
-               await getOcMembers();
+            if (res.success) {
+                await getOcMembers();
             } else {
                 setError("Failed to Remove Member");
             }
@@ -72,11 +74,11 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({email})
+                body: JSON.stringify({ email })
             }).then(res => res.json());
 
-            if(res.success){
-               await getOcMembers();
+            if (res.success) {
+                await getOcMembers();
             } else {
                 setError("Failed to Add Member");
             }
@@ -86,9 +88,6 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
             setEmail("");
         }
     }
-
-
-
 
     return (
         <div className='w-[400px] bg-white border border-gray-200 shadow-xl rounded-xl p-5 flex flex-col gap-4'>
@@ -116,13 +115,18 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
                                         <span className="text-xs text-gray-500 truncate">{member.collegeEmail}</span>
                                     </div>
                                 </div>
-                                <button
-                                    className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-red-50 opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                    title="Remove member"
-                                    onClick={() => removeMember(member.collegeEmail) }
-                                >
-                                    <X size={16} />
-                                </button>
+                                {
+                                    user?.collegeEmail !== member.collegeEmail && (
+                                        <button
+                                            className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-red-50 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            title="Remove member"
+                                            onClick={() => removeMember(member.collegeEmail)}
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    )
+                                }
+
                             </div>
                         ))}
 
