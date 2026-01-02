@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ExternalLink } from "lucide-react";
 import { useToast } from "@/components/ToastContext";
 import { Button, ErrorMessage } from "@/components/ui";
 import Loader from "@/components/ui/Loader";
@@ -47,18 +46,28 @@ function Page() {
          addToast("Invitation accepted!");
          setLoading(false)
          router.push("/participated-hackathons");
+      } else {
+         setLoading(false);
+         addToast(res.message || "Failed to accept invitation");
+         router.push("/participated-hackathons");
       }
    };
 
    const handleDecline = async () => {
       setLoading(true)
-      await fetch(`/api/accept-decline-invite/${params.inviteId}`, {
+      const res = await fetch(`/api/accept-decline-invite/${params.inviteId}`, {
          method: "POST",
          body: JSON.stringify({ action: "decline", teamId: invite?.teamId }),
       }).then((res) => res.json());
-      addToast("Invitation declined.");
-      setLoading(false)
-      router.push("/");
+      if(res.success){
+         setLoading(false)
+         router.push("/");
+         addToast("Invitation declined.");
+      }  else {
+         setLoading(false);
+         addToast(res.message || "Failed to decline invitation");
+         router.push("/");
+      }
    };
 
    if (loading) return <Loader fullscreen />;
@@ -72,7 +81,6 @@ function Page() {
    return (
       <div className="flex items-center justify-center min-h-screen">
          <div className="w-full max-w-md bg-white shadow-2xl rounded-xl border border-slate-200 p-8 mx-4 relative">
-            <ExternalLink className="absolute right-4 top-4 cursor-pointer" />
             <h1 className="text-2xl font-bold text-indigo-700 mb-2 text-center">
                {invite?.hackathonName}
             </h1>

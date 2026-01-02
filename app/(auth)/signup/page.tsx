@@ -33,10 +33,10 @@ const Page = () => {
 
    const { addToast } = useToast();
 
-   const [signInUser, setSignInUser] =
-      useState<signInuserObjectType>(userObject);
+   const [signInUser, setSignInUser] = useState<signInuserObjectType>(userObject);
    const [isSending, setIsSending] = useState<boolean>(false);
    const [otpSent, setOtpSent] = useState<boolean>(false);
+
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setSignInUser((prev) => ({ ...prev, [name]: value }));
@@ -48,7 +48,7 @@ const Page = () => {
       try {
          const res = await fetch("/api/send-otp", {
             method: "POST",
-            body: JSON.stringify({ collegeEmail: signInUser.collegeEmail }),
+            body: JSON.stringify({ collegeEmail: signInUser.collegeEmail, from: "signup" }),
          }).then((data) => data.json());
 
          const data = res.data;
@@ -56,6 +56,9 @@ const Page = () => {
             signInUser.mode = data.mode;
             addToast("OTP sent! Please verify !!");
             setOtpSent(true);
+         } else {
+            addToast(res.message || "Failed to send OTP");
+            router.push("/login");
          }
 
          console.log(data);
@@ -80,6 +83,7 @@ const Page = () => {
                <Section title="Personal Details">
                   <div className="grid md:grid-cols-2 gap-5 mb-3">
                      <Input
+                        required
                         label="name"
                         name="name"
                         onChange={handleChange}
@@ -89,16 +93,20 @@ const Page = () => {
                      />
 
                      <Input
+                        required
                         label="Mobile Number"
                         name="mobileNumber"
                         onChange={handleChange}
                         value={signInUser.mobileNumber}
-                        type="number"
+                        type="tel"
+                        minLength={10}
+                        maxLength={10}
                         placeholder="Enter mobile number"
                      />
                   </div>
 
                   <Input
+                     required
                      label="Personal Email"
                      onChange={handleChange}
                      type="email"
@@ -111,6 +119,7 @@ const Page = () => {
                <Section title="Academic Details">
                   <div className="grid md:grid-cols-2 gap-5 mb-3">
                      <Input
+                        required
                         label="College Email"
                         name="collegeEmail"
                         onChange={handleChange}
@@ -120,6 +129,7 @@ const Page = () => {
                      />
 
                      <Input
+                        required
                         label="Hostel Email"
                         name="hostelEmail"
                         placeholder="Enter Hostel Email"
@@ -131,6 +141,7 @@ const Page = () => {
 
                   <div className="grid md:grid-cols-3 gap-5 mb-3">
                      <Input
+                        required
                         label="Branch"
                         name="branch"
                         placeholder="Enter your branch"
@@ -140,6 +151,7 @@ const Page = () => {
                      />
 
                      <Input
+                        required
                         label="Hostel Name"
                         name="hostel"
                         placeholder="Enter Hostel name"
@@ -149,6 +161,7 @@ const Page = () => {
                      />
 
                      <Input
+                        required
                         label="Year of Study"
                         name="studyYear"
                         placeholder="Enter year of Stusy"
@@ -161,6 +174,7 @@ const Page = () => {
 
                <Section title="Additional Links">
                   <Input
+
                      className="mb-3"
                      label="Github Link"
                      name="githubLink"
@@ -171,6 +185,7 @@ const Page = () => {
                   />
 
                   <Input
+
                      label="LinkedIn Profile"
                      name="linkedinLink"
                      onChange={handleChange}

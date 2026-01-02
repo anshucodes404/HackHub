@@ -7,6 +7,7 @@ import { Team } from "@/models/team.model";
 import { sendDeclineEmail } from "@/Emails/sendDeclineEmail";
 import { sendAcceptEmail } from "@/Emails/sendAcceptEmail";
 import { Invite } from "@/models/invite.model";
+import type {ITeamMember} from "@/models/team.model"
 
 export async function POST(
 	req: NextRequest,
@@ -27,6 +28,19 @@ export async function POST(
 			return NextResponse.json(new ApiResponse(false, "Team ID is missing"), {
 				status: 400,
 			});
+		}
+
+		const team = await Team.findById(teamId);
+		if(!team){
+			return NextResponse.json(new ApiResponse(false, "Team not found"), {
+				status: 404,
+			});
+		}
+
+		const userAlreadyMember = team.members.some((member: ITeamMember) => member.collegeEmail === collegeEmail)
+
+		if(userAlreadyMember){
+			return NextResponse.json(new ApiResponse(false, "You are already a member of the team"), {status: 400})
 		}
 
 		const invite = await Invite.findById(inviteId)
@@ -54,7 +68,6 @@ export async function POST(
 					{ status: 500 },
 				);
 			}
-			// console.log(team)
 
 			invite.status.map((inv: {email: string, status: string}) => {
 				if(inv.email === collegeEmail){

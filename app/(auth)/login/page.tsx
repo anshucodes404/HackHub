@@ -13,7 +13,7 @@ import Sending from "@/components/ui/Sending";
 const Page = () => {
 	const { user } = useUser();
 	const router = useRouter();
-	const {addToast} = useToast()
+	const { addToast } = useToast()
 
 	useEffect(() => {
 		if (user) router.push("/hackathons");
@@ -36,9 +36,9 @@ const Page = () => {
 		setIsSending(true);
 		const res = await fetch("/api/send-otp", {
 			method: "POST",
-			body: JSON.stringify({ collegeEmail: loginUser.collegeEmail }),
+			body: JSON.stringify({ collegeEmail: loginUser.collegeEmail, from: "login" }),
 		}).then((data) => data.json());
-
+		console.log(res)
 		const data = res.data;
 		if (res.success) {
 			loginUser.mode = data.mode;
@@ -60,6 +60,7 @@ const Page = () => {
 					</section>
 					<hr className="text-gray-200 mb-3" />
 					<Input
+						required
 						label="College Email"
 						name="collegeEmail"
 						type="email"
@@ -75,7 +76,7 @@ const Page = () => {
 						>
 							{!isSending ? "Get OTP" : "Sending..."}
 							{!isSending && <SendHorizontal size={16} />}
-							
+
 						</Button>
 					</div>
 				</div>

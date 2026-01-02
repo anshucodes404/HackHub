@@ -10,6 +10,7 @@ import z from "zod";
 
 const reqSchema = z.object({
 	collegeEmail: z.email(),
+	from: z.enum(["login", "signup"]),
 });
 
 export async function POST(req: NextRequest) {
@@ -22,13 +23,22 @@ export async function POST(req: NextRequest) {
 		});
 	}
 
-	const { collegeEmail } = parsedBody.data;
+	const { collegeEmail, from } = parsedBody.data;
 
 	await dbConnect();
 
 	try {
     console.log("OTP request")
 		const existingUser: IUser | null = await User.findOne({ collegeEmail });
+
+		if(from === "signup" && existingUser){
+			return NextResponse.json(new ApiResponse(false, "User already exists, Log in instead"), {status: 307});
+		}
+
+		if(from === "login" && !existingUser){
+			return NextResponse.json(new ApiResponse(false, "User does not exist, Sign up first"), {status: 307});
+		}
+
 		// console.log(existingUser)
 
 		// if(!existingUser){
