@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import VerifyOTP from "../../../components/verifyOTP/page";
 import type { logInuserObjectType } from "@/types/types";
-import { Button, Input } from "@/components/ui";
+import { Button, ErrorMessage, Input } from "@/components/ui";
 import { SendHorizontal } from "lucide-react";
 import { useUser } from "@/components/UserContext";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ const Page = () => {
 	const [loginUser, setLoginUser] = useState<logInuserObjectType>(userObject);
 	const [isSending, setIsSending] = useState<boolean>(false);
 	const [otpSent, setOtpSent] = useState<boolean>(false);
+	const [error, setError] = useState<string>("")
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setLoginUser((prev) => ({ ...prev, [name]: value }));
@@ -33,6 +34,13 @@ const Page = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setError("")
+
+		if(!loginUser.collegeEmail.endsWith("@kiit.ac.in") ){
+			setError("Please enter a valid college email ending with @kiit.ac.in");
+			return;
+		}
+
 		setIsSending(true);
 		const res = await fetch("/api/send-otp", {
 			method: "POST",
@@ -67,8 +75,9 @@ const Page = () => {
 						placeholder="Enter college email"
 						value={loginUser.collegeEmail}
 						onChange={handleChange}
-						className="mb-3"
+						className="mb-1"
 					/>
+					{error && <ErrorMessage message={error} />}
 					<div className="text-center">
 						<Button
 							type="submit"

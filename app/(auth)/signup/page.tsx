@@ -4,7 +4,7 @@ import { signInuserObjectType } from "@/types/types";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import VerifyOTP from "../../../components/verifyOTP/page";
-import { Button, Input, Section } from "@/components/ui";
+import { Button, ErrorMessage, Input, Section } from "@/components/ui";
 import { SendHorizontal } from "lucide-react";
 import { useToast } from "@/components/ToastContext";
 import { useUser } from "@/components/UserContext";
@@ -36,6 +36,7 @@ const Page = () => {
    const [signInUser, setSignInUser] = useState<signInuserObjectType>(userObject);
    const [isSending, setIsSending] = useState<boolean>(false);
    const [otpSent, setOtpSent] = useState<boolean>(false);
+   const [error, setError] = useState<string>("");
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -44,6 +45,18 @@ const Page = () => {
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
+      setError("");
+
+      if (!signInUser.collegeEmail.endsWith("@kiit.ac.in")) {
+         setError("Please enter a valid college email ending with @kiit.ac.in");
+         return;
+      }
+
+      if(!signInUser.email.includes("@")){
+         setError("Please enter a valid personal email address");
+         return;
+      }
+
       setIsSending(true);
       try {
          const res = await fetch("/api/send-otp", {
@@ -194,6 +207,10 @@ const Page = () => {
                      value={signInUser.LinkedInLink}
                   />
                </Section>
+
+               {
+                  error && <ErrorMessage message={error} />
+               }
 
                <div className="text-center">
                   <Button

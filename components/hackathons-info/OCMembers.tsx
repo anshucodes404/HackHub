@@ -69,6 +69,12 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
     const addMember = async (email: string) => {
         try {
             setError(null);
+
+            if(email.includes("@")){
+                setError("Please enter only the username part of the email before @kiit.ac.in");
+                return;
+            }
+
             const res = await fetch(`/api/hackathons/${slug}/oc-members`, {
                 method: "POST",
                 headers: {
@@ -139,23 +145,28 @@ const OCMembers = ({ setOcMembersOpen }: { setOcMembersOpen: (val: boolean) => v
                 )
             }
 
-
-
             {
                 error && <ErrorMessage message={error} />
             }
 
             <div className="pt-4 border-t border-gray-100 mt-1">
-                <label className="text-xs font-medium text-gray-700 mb-2 block">Add new member</label>
+                <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-gray-800">Add new member</label>
+                    <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">KIIT email only</span>
+                </div>
+                <p className="text-[11px] text-gray-500 mb-3">Invite organizing committee members using their institutional address.</p>
                 <div className="flex gap-2 items-start">
-                    <div className="flex-1">
+                    <div className="flex-1 relative">
                         <Input
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter roll number"
-                            className="w-full text-sm py-2"
+                            placeholder="Enter email"
+                            className="w-full text-sm py-2 pr-28 bg-gray-50 border-gray-200 focus:ring-blue-600 focus:border-blue-500"
                             type="text"
                         />
+                        <span className='absolute right-2 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-full px-3 py-1 shadow-sm'>
+                            @kiit.ac.in
+                        </span>
                     </div>
                     <Button type='submit' variant="primary" className="px-3 py-[9px] flex items-center justify-center rounded-lg" aria-label="Add member" onClick={() => addMember(email)}>
                         <Plus size={18} />
