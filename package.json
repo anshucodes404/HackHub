@@ -18,13 +18,12 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.546.0",
     "mongoose": "^8.19.1",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "nodemailer": "^7.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zod": "^4.1.12"
   },
-  
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
     "@eslint/eslintrc": "^3",
