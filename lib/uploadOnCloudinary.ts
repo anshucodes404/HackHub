@@ -17,6 +17,7 @@ export default async function uploadOnCloudinary(file: File, folder: string, res
 	form.append("folder", signedURL.folder);
 	form.append("signature", signedURL.signature);
 	form.append("resource_type", resourceType);
+	form.append("type", "upload");
 
 	try {
 		const res = await fetch(signedURL.uploadUrl, {
@@ -24,7 +25,7 @@ export default async function uploadOnCloudinary(file: File, folder: string, res
 			body: form,
 		}).then((res) => res.json());
 		console.log(res);
-		const url = res?.url?.trim();
+		const url = res?.secure_url?.trim() || res?.url?.trim();
 		return url;
 	} catch (error) {
 		console.error("Failed to upload image", error);

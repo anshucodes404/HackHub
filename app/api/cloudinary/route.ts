@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
 	const paramsToSign = {
 		folder: folder,
 		timestamp: Math.floor(Date.now() / 1000),
+		type: "upload",
 	};
 
 	const signature = cloudinary.utils.api_sign_request(

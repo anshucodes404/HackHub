@@ -49,7 +49,7 @@ export interface HackathonCardProps {
 	location?: string;
 	tagline: string;
 	organiserName: string;
-	duration: string;
+	duration: number;
 	minTeamSize: number;
 	maxTeamSize: number;
 	startAt: Date;
@@ -76,7 +76,7 @@ export type DetailedHackathon = {
 	organiser: string;
 	organiserName: string;
 	startAt: Date;
-	duration: string;
+	duration: number;
 	registrationDeadline: Date;
 	minTeamSize: number;
 	maxTeamSize: number;
@@ -129,7 +129,7 @@ export type HackathonDetailsProps = {
 	tagline?: string;
 	status?: string;
 	startAt: string;
-	duration: string;
+	duration: number;
 	minTeamSize: number;
 	maxTeamSize: number;
 	mode: "online" | "inplace";

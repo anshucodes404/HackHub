@@ -13,15 +13,28 @@ const page = () => {
 	const [hackathonName, setHackathonName] = useState<string>("")
 	const [tagline, setTagline] = useState<string>("")
 	const [bannerImage, setBannerImage] = useState<string>("")
+	const [registrationDeadline, setRegistrationDeadline] = useState<Date | null>(null)
+	const [startSubmission, setStartSubmission] = useState<Date | null>(null)
+	const [endSubmission, setEndSubmission] = useState<Date | null>(null)
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 
 	const hackathonData = async () => {
 		try {
 			const res = await fetch(`/api/hackathons/${hackathonSlug}`).then(res => res.json())
+			console.log(res.data)
 			if(res?.success){
 				setHackathonName(res.data.hackathonName)
 				setTagline(res.data.tagline)
 				setBannerImage(res.data.bannerImage)
+				setStartSubmission(new Date(res.data.registrationDeadline))
+				setRegistrationDeadline(new Date(res.data.registrationDeadline))
+				
+				const deadline = new Date(res.data.registrationDeadline)
+				const durationHours = parseInt(res.data.duration)
+				console.log(deadline, " ", durationHours)
+				deadline.setHours(deadline.getHours() + durationHours)
+				console.log(deadline)
+				setEndSubmission(deadline)
 			}
 		} catch (error) {
 			console.error(error)	
@@ -62,7 +75,7 @@ const page = () => {
 					)}
 					<div className="">
 						<h1 className="text-xl font-bold">{hackathonName}</h1>
-						<p>{tagline}</p>
+						<p className="text-sm font-medium text-gray-500">{tagline}</p>
 					</div>
 				</div>
 			</section>
@@ -106,9 +119,9 @@ const page = () => {
 					</div>
 				</section>
 
-				{activeTab === "details" && <TeamDetails />}
+				{activeTab === "details" && <TeamDetails/>}
 
-				{activeTab === "submission" && <ProjectSubmission />}
+				{activeTab === "submission" && <ProjectSubmission startSubmission={startSubmission} endSubmission={endSubmission} />}
 
 				{activeTab === "results" && <Results />}
 			</main>

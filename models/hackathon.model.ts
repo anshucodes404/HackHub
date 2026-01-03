@@ -13,7 +13,7 @@ export interface IHackathon extends Document {
   organiser: mongoose.Types.ObjectId;
   organiserName: string;
   startAt: Date;
-  duration: string;
+  duration: number;
   registrationDeadline: Date;
   minTeamSize: number;
   maxTeamSize: number;
@@ -76,7 +76,7 @@ const hackathonSchema = new Schema<IHackathon>(
       required: true,
     },
     duration: {
-      type: String,
+      type: Number,
       required: true,
     },
     registrationDeadline: {

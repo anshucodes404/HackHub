@@ -176,7 +176,7 @@ export default function Page() {
               label="Registration Deadline"
               type="date"
             />
-            <Input required name="duration" label="Duration" placeholder="e.g. 48 hours" />
+            <Input required type="number" name="duration" label="Duration" placeholder="e.g. 48 hours" />
           </div>
         </Section>
 
