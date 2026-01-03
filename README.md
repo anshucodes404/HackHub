@@ -1,4 +1,4 @@
-# HackHub — Hack Trackr Pro
+# HackHub — Hackathon Managing App
 
 <div align="center">
   <h3>Beautiful, minimal dashboard for hackathon management</h3>
