@@ -117,8 +117,4 @@ MIT — see LICENSE file.
 
 ---
 
-If you want, README can be expanded with:
-- an architecture diagram,
-- example .env template,
-- a screenshot/demo GIF, or
-- contributor & deployment instructions.
+
