@@ -10,8 +10,8 @@ export interface IUser extends Document {
   branch: string,
   hostel: string,
   studyYear: string,
-  githubLink: string,
-  LinkedInLink: string,
+  githubLink?: string,
+  LinkedInLink?: string,
   createdAt: Date;
   updatedAt: Date;
 }

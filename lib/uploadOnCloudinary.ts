@@ -24,7 +24,7 @@ export default async function uploadOnCloudinary(file: File, folder: string, res
 			body: form,
 		}).then((res) => res.json());
 		console.log(res);
-		const url = res.secure_url?.trim();
+		const url = res?.url?.trim();
 		return url;
 	} catch (error) {
 		console.error("Failed to upload image", error);

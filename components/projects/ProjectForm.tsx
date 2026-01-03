@@ -1,6 +1,6 @@
-import { NotepadTextDashed, Upload } from "lucide-react";
+import { Loader, NotepadTextDashed, Upload } from "lucide-react";
 import { Button, Input, Textarea } from "../ui";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "../ToastContext";
 import uploadOnCloudinary from "@/lib/uploadOnCloudinary";
 import { useParams } from "next/navigation";
@@ -12,6 +12,23 @@ const ProjectForm = () => {
   const hackathonId = useParams().slug;
   const teamId = useParams().teamId;
   const formRef = useRef<HTMLFormElement>(null);
+  const [loading, setLoading] = useState<boolean>(true)
+  const [message, setMessage] = useState<string>("")
+
+  useEffect(() => {
+    getUserSubmission();
+  }, [])
+
+  const getUserSubmission = async () => {
+    try {
+      const res = await fetch(`/api/hackathons/teams/projectSubmit?hackathonId=${hackathonId}&teamId=${teamId}`).then(res => res.json())
+      setMessage(res.message)
+    } catch(error){
+      console.error(error)
+    } finally{
+      setLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,17 +94,22 @@ const ProjectForm = () => {
     }
   };
 
+    if(loading) return <div className='flex items-center justify-center'><Loader size={400} /></div>
+
   return (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
       className="h-[630px] no-scrollbar px-1"
     >
-      <section className="">
+      <section className="flex items-center gap-3">
         <div className="flex items-center text-2xl font-bold gap-2">
           <NotepadTextDashed />
           Project Submission
         </div>
+        <span>
+          {message && <div className="mt-1 text-sm text-red-600 italic">{message}</div>}
+        </span>
       </section>
       <hr className="text-gray-300 mt-3" />
 

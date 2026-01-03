@@ -11,14 +11,40 @@ import {
 	GraduationCap,
 	SquarePen,
 	Smartphone,
+	Trash2,
 } from "lucide-react";
 import { useUser } from "../UserContext";
 import ProfileEdit from "./ProfileEdit";
 import ProfileImageView from "../ProfileImageView";
+import DeleteProfile from "../DeleteProfile";
+import { useRouter } from "next/navigation";
+import Loader from "../ui/Loader";
 
 export default function ProfileCard() {
 	const { user } = useUser();
 	const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+	const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const router = useRouter()
+
+	const handleDeleteProfile = async () => {
+		try {
+			setIsLoading(true);
+			const res = await fetch("/api/user", {
+				method: "DELETE"
+			}).then(res => res.json())
+
+			if(res.success){
+				setIsLoading(false);
+				router.push("/");
+			}
+
+		} catch (error) {
+			
+		}
+	}
+
+	if(isLoading) return <Loader fullscreen />
 
 	if (!user)
 		return (
@@ -32,16 +58,27 @@ export default function ProfileCard() {
 			<div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-slate-100 overflow-hidden w-2xl">
 				<div className="p-6 sm:p-8 flex flex-col gap-6">
 					<div className="flex flex-col justify-center items-center relative">
-						<button
-							type="button"
-							title="Edit Profile"
-							onClick={() => setIsEditOpen(true)}
-							className="absolute right-0 top-0 text-gray-400 hover:text-blue-600 transition-all p-2"
-						>
-							<SquarePen size={20} />
-						</button>
+						<div className="flex gap-2 absolute top-0 right-0 ">
+							<button
+								type="button"
+								title="Edit Profile"
+								onClick={() => setIsEditOpen(true)}
+								className=" text-gray-400 hover:text-blue-600 transition-all p-2"
+							>
+								<SquarePen size={20} />
+							</button>
+							<button
+								type="button"
+								title="Delete Profile"
+								onClick={() => setIsDeleteOpen(true)}
+								className=" text-red-400 hover:text-red-600 transition-all p-2"
+							>
+								<Trash2 size={20} />
+							</button>
 
-						<ProfileImageView src={user.profileImageUrl} name={user.name} size={100}  />
+						</div>
+
+						<ProfileImageView src={user.profileImageUrl} name={user.name} size={100} />
 
 						<div className="mt-3 text-sm text-slate-500 text-center">
 							Member since {new Date(user.createdAt).toLocaleDateString()}
@@ -157,6 +194,11 @@ export default function ProfileCard() {
 				isEditOpen={isEditOpen}
 				onClose={() => setIsEditOpen(false)}
 			/>
+
+			{
+				isDeleteOpen && <DeleteProfile onClose={() => setIsDeleteOpen(false)} deleteProfile={() => handleDeleteProfile()} />
+			}
+
 		</>
 	);
 }

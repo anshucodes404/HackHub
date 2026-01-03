@@ -49,15 +49,6 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 		}
 	}, [isEditOpen, user]);
 
-	useEffect(() => {
-		//now creating a function that checks if escape is pressed or not
-		const onKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape" && isEditOpen) onClose();
-		};
-		window.addEventListener("keydown", onKey);
-		return () => window.removeEventListener("keydown", onKey);
-	}, [isEditOpen, onClose]);
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setTempUser((prev) => ({ ...prev, [name]: value }));
@@ -89,12 +80,12 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 		}
 	};
 
-	const uploadImage = async(file: File) => {
+	const uploadImage = async (file: File) => {
 		addToast("Uploading image...")
 		setUploading(true)
 		const url = await uploadOnCloudinary(file, "profile_images");
-		if(url){
-			setTempUser(prev => ({...prev, profileImageUrl: url}))
+		if (url) {
+			setTempUser(prev => ({ ...prev, profileImageUrl: url }))
 		}
 		setUploading(false)
 		addToast("Image uploaded")
@@ -106,13 +97,11 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 		<div className="fixed inset-0 z-30 flex items-center justify-center">
 			<form
 				onSubmit={handleSubmit}
-				className="relative z-10 max-w-4xl w-full mx-4 bg-white rounded-2xl shadow-xl p-6 max-h-[75vh] overflow-auto"
+				className="relative z-10 max-w-4xl w-full mx-4 bg-white rounded-2xl shadow-xl p-6 max-h-[75vh] overflow-auto no-scrollbar"
 			>
 				<div>
 					<div className="flex items-center justify-between mb-4">
 						<h3 className="text-lg font-semibold">Edit Profile</h3>
-
-						{/*//TODO:  Need to add the avatar change functionality*/}
 
 						<button
 							type="button"
@@ -130,6 +119,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 					<Section title="Personal Details">
 						<div className="grid md:grid-cols-2 gap-5 mb-3">
 							<Input
+								required
 								label="Name"
 								name="name"
 								onChange={handleChange}
@@ -139,6 +129,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 							/>
 
 							<Input
+								required
 								label="Mobile Number"
 								name="mobileNumber"
 								onChange={handleChange}
@@ -149,6 +140,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 						</div>
 
 						<Input
+							required
 							label="Personal Email"
 							onChange={handleChange}
 							type="email"
@@ -161,6 +153,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 					<Section title="Academic Details">
 						<div className="grid md:grid-cols-2 gap-5 mb-3">
 							<Input
+								required
 								label="College Email"
 								name="collegeEmail"
 								onChange={handleChange}
@@ -170,6 +163,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 							/>
 
 							<Input
+								required
 								label="Hostel Email"
 								name="hostelEmail"
 								placeholder="Enter Hostel Email"
@@ -181,6 +175,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 
 						<div className="grid md:grid-cols-3 gap-5 mb-3">
 							<Input
+								required
 								label="Branch"
 								name="branch"
 								placeholder="Enter your branch"
@@ -190,6 +185,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 							/>
 
 							<Input
+								required
 								label="Hostel Name"
 								name="hostel"
 								placeholder="Enter Hostel name"
@@ -199,6 +195,7 @@ const ProfileEdit: React.FC<UserDataProps> = ({
 							/>
 
 							<Input
+								required
 								label="Year of Study"
 								name="studyYear"
 								placeholder="Enter year of Study"

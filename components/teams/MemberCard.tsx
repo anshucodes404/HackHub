@@ -1,4 +1,4 @@
-import { UserRoundX } from "lucide-react";
+import { UserX } from "lucide-react";
 import ProfileImageView from "../ProfileImageView";
 import { useUser } from "../UserContext";
 import RoleTag from "./RoleTag";
@@ -47,7 +47,7 @@ const MemberCard = ({
 						title="Kick Out"
 						type="button"
 					>
-						<UserRoundX className="size-5 hover:text-red-600 text-red-400 transition-all duration-200" />
+						<UserX className="size-5 hover:text-red-600 text-red-400 transition-all duration-200" />
 					</button>
 				)}
 			</div>
