@@ -13,6 +13,7 @@ function Page() {
    const [loading, setLoading] = useState(true);
    const [invite, setInvite] = useState<Invite | null>(null);
    const [error, setError] = useState("");
+
    useEffect(() => {
       async function loadInvite() {
          try {
@@ -43,7 +44,7 @@ function Page() {
          body: JSON.stringify({ action: "accept", teamId: invite?.teamId }),
       }).then((res) => res.json());
       if (res.success) {
-         addToast("Invitation accepted!");
+         addToast(res.message || "Invitation accepted");
          setLoading(false)
          router.push("/participated-hackathons");
       } else {

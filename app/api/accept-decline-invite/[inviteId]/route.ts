@@ -8,6 +8,7 @@ import { sendDeclineEmail } from "@/Emails/sendDeclineEmail";
 import { sendAcceptEmail } from "@/Emails/sendAcceptEmail";
 import { Invite } from "@/models/invite.model";
 import type {ITeamMember} from "@/models/team.model"
+import { Types } from "mongoose";
 
 export async function POST(
 	req: NextRequest,
@@ -30,14 +31,42 @@ export async function POST(
 			});
 		}
 
-		const team = await Team.findById(teamId);
-		if(!team){
+		const team = await Team.aggregate([
+			{
+				$match: { _id: new Types.ObjectId(teamId) },
+			},
+			{
+				$lookup: {
+					from: "hackathons",
+					localField: "hackathonId",
+					foreignField: "_id",
+					as: "hackathonDetails",
+				},
+			},
+			{
+				$unwind: "$hackathonDetails",
+			},
+			{
+				$addFields: {
+					maxTeamSize: "$hackathonDetails.maxTeamSize",
+				},
+			},
+			{
+				$project: {
+					hackathonDetails: 0,
+				},
+			},
+		]);
+
+		console.log(team)
+
+		if (!team || team.length === 0) {
 			return NextResponse.json(new ApiResponse(false, "Team not found"), {
 				status: 404,
 			});
 		}
 
-		const userAlreadyMember = team.members.some((member: ITeamMember) => member.collegeEmail === collegeEmail)
+		const userAlreadyMember = team[0].members.some((member: ITeamMember) => member.collegeEmail === collegeEmail)
 
 		if(userAlreadyMember){
 			return NextResponse.json(new ApiResponse(false, "You are already a member of the team"), {status: 400})
@@ -46,28 +75,19 @@ export async function POST(
 		const invite = await Invite.findById(inviteId)
 
 		if (action === "accept") {
+			if(team[0].members.length >= team[0].maxTeamSize){
+				return NextResponse.json(new ApiResponse(false, "Team is already full"), {status: 400})
+			}
+
 			const member = {
 				userId: _id,
 				name: name,
 				collegeEmail: collegeEmail,
 			};
 
-		
-
-			const team = await Team.findByIdAndUpdate(
-				teamId,
-				{
-					$push: { members: member },
-				},
-				{ new: true },
-			);
-			if (!team) {
-				console.error("Invitation accept failed");
-				return NextResponse.json(
-					new ApiResponse(false, "Invitation accept failed"),
-					{ status: 500 },
-				);
-			}
+			team[0].members.push(member);
+			
+			await team[0].save();
 
 			invite.status.map((inv: {email: string, status: string}) => {
 				if(inv.email === collegeEmail){
@@ -75,7 +95,7 @@ export async function POST(
 				}
 			})
 			await invite.save()
-			const leader = team.members.filter(
+			const leader = team[0].members.filter(
 				(member: { role: string }) => member.role === "leader",
 			)[0];
 
@@ -84,8 +104,8 @@ export async function POST(
 				teamLeaderName: leader.name,
 				accepterName: name,
 				accepterEmail: collegeEmail,
-				hackathonName: team.hackathonName,
-				teamName: team.name,
+				hackathonName: team[0].hackathonName,
+				teamName: team[0].name,
 			});
 
 			return NextResponse.json(new ApiResponse(true, "Invitation accepted"), {
