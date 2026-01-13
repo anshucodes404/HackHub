@@ -14,12 +14,23 @@ export default function Page() {
   const [mode, setMode] = useState("online");
   const [bannerImage, setBannerImage] = useState<string>("")
   const [status, setStatus] = useState<"published" | "draft">("published")
+  const [startAt, setStartAt] = useState("")
+  const [registrationDeadline, setRegistrationDeadline] = useState("")
+
+  const today = new Date().toISOString()
+  const todayDateOnly = today.split("T")[0];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
+      
+      if (startAt && registrationDeadline && new Date(startAt) <= new Date(registrationDeadline)) {
+        addToast("Start date must be after registration deadline");
+        return;
+      }
+
       addToast("Creating Hackathon");
       setIsCreating(true);
-      e.preventDefault();
       const formData = new FormData(e.currentTarget);
       formData.append("bannerImage", bannerImage as string)
       formData.append("status", status)
@@ -112,7 +123,7 @@ export default function Page() {
             </div>
 
             <div>
-              <span className="inline-block text-sm font-medium text-gray-700 mb-1">
+              <span className="inline-block text-sm font-medium text-gray-700">
                 Mode
               </span>
               <select
@@ -156,7 +167,7 @@ export default function Page() {
                 <ImagePlus className="w-6 h-6 text-blue-600" />
               </div>
               <span className="text-sm font-semibold text-gray-900">Click to upload banner</span>
-              <span className="text-xs text-gray-500 mt-1">SVG, PNG, JPG or GIF (max. 800x400px)</span>
+              <span className="text-xs text-gray-500 mt-1">SVG, PNG, JPG</span>
             </div>
           </div>
         </Section>
@@ -166,16 +177,23 @@ export default function Page() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Input
             required
-              name="startAt"
-              label="Start Date and Time"
-              type="datetime-local"
-            />
-            <Input
-            required
               name="registrationDeadline"
               label="Registration Deadline"
               type="date"
+              min={todayDateOnly}
+              value={registrationDeadline}
+              onChange={(e) => setRegistrationDeadline(e.target.value)}
             />
+            <Input
+            required
+              name="startAt"
+              label="Start Date"
+              type="date"
+              min={registrationDeadline ? registrationDeadline : todayDateOnly}
+              value={startAt}
+              onChange={(e) => setStartAt(e.target.value)}
+            />
+            
             <Input required type="number" name="duration" label="Duration (in hours) " placeholder="e.g. 48" />
           </div>
         </Section>

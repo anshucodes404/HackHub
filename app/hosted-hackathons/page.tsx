@@ -4,24 +4,23 @@ import HackathonCard from "@/components/hackathons/HackathonCard";
 
 import Loader from "@/components/ui/Loader";
 import type { HackathonCardProps } from "@/types/types";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 const Page = () => {
    const [isGettingInfo, setIsGettingInfo] = useState<boolean>(false);
-   useEffect(() => {
-      console.log("Hackathons page mounted");
-      (async () => {
-         await getHackathonInfos();
-      })();
-   }, []);
-
-   const [hackathons, setHackathons] = useState<HackathonCardProps[]>([]);
-
-   const getHackathonInfos = async () => {
+   const searchParams = useSearchParams();
+   const getHackathonInfos = useCallback(async () => {
       try {
          setIsGettingInfo(true);
          console.log("fetching hackathons...");
-         const raw = await fetch("/api/hackathons/hosted", { method: "GET" });
+
+         const queryString = searchParams.toString();
+         const url = queryString
+            ? `/api/hackathons/hosted?${queryString}`
+            : "/api/hackathons/hosted";
+
+         const raw = await fetch(url, { method: "GET" });
          const res = await raw.json();
          console.log("hackathons response:", res);
          if (res?.data) setHackathons(res.data as HackathonCardProps[]);
@@ -30,7 +29,17 @@ const Page = () => {
       } finally {
          setIsGettingInfo(false);
       }
-   };
+   }, [searchParams]);
+
+   useEffect(() => {
+      (async () => {
+         await getHackathonInfos();
+      })();
+   }, [getHackathonInfos]);
+
+   const [hackathons, setHackathons] = useState<HackathonCardProps[]>([]);
+
+
 
    if (isGettingInfo) {
       return <Loader fullscreen />;

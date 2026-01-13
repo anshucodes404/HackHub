@@ -129,10 +129,10 @@ function Aside() {
 						<CheckBox
 							type="radio"
 							name="mode"
-							value="in-person"
+							value="inplace"
 							id="inperson"
 							label="In Person"
-							checked={selectedMode === "in-person"}
+							checked={selectedMode === "inplace"}
 							onChange={handleModeChange}
 						/>
 					</div>

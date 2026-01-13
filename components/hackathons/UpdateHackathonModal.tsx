@@ -135,6 +135,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
 
                         <div className="mt-6">
                             <Textarea
+                                required
                                 name="description"
                                 label="Description"
                                 placeholder="Describe your hackathon, themes, and goals..."
@@ -172,7 +173,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                         <div className="mt-6">
                             {mode === "inplace" && (
                                 <Input
-                                    required
+                                    required={mode === "inplace"}
                                     name="location"
                                     label="Location"
                                     placeholder="Enter hackathon venue"
@@ -196,6 +197,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                                     />
                                 ) : null}
                                 <Input
+                                    required
                                     type="file"
                                     accept="image/*"
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -217,18 +219,21 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                     <Section title="Schedule">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <Input
+                                required
                                 name="startAt"
                                 label="Start Date and Time"
                                 type="datetime-local"
                                 defaultValue={formatDateTime(hackathon.startAt)}
                             />
                             <Input
+                                required
                                 name="registrationDeadline"
                                 label="Registration Deadline"
                                 type="date"
                                 defaultValue={formatDate(hackathon.registrationDeadline)}
                             />
                             <Input
+                                required
                                 name="duration"
                                 label="Duration"
                                 placeholder="e.g. 48 hours"
@@ -240,6 +245,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                     <Section title="Team & Eligibility">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Input
+                                required
                                 name="minTeamSize"
                                 label="Min Team Size"
                                 placeholder="e.g. 2"
@@ -247,6 +253,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                                 defaultValue={hackathon.minTeamSize}
                             />
                             <Input
+                                required
                                 name="maxTeamSize"
                                 label="Max Team Size"
                                 placeholder="e.g. 5"
@@ -257,6 +264,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
 
                         <div className="mt-6">
                             <Textarea
+                                required
                                 name="criteria"
                                 label="Eligibility Criteria"
                                 placeholder="e.g. College students only"
@@ -266,6 +274,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
 
                         <div className="mt-6">
                             <Input
+                                required
                                 name="prize"
                                 label="Prize"
                                 placeholder="e.g. 50,000"
@@ -278,6 +287,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                     <Section title="Organizer Details">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Input
+                                required
                                 name="organiser"
                                 label="Organizer / Society Name"
                                 placeholder="e.g. Tech Club"
@@ -285,6 +295,7 @@ const UpdateHackathonModal: React.FC<UpdateHackathonModalProps> = ({
                                 readOnly
                             />
                             <Input
+                                required
                                 name="organiserEmail"
                                 label="Contact Email"
                                 placeholder="example@email.com"

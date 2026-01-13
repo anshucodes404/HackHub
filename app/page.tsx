@@ -2,15 +2,8 @@
 
 import Hero from "@/components/landing/Hero";
 import Features from "@/components/landing/Features";
-import PopularHackathons from "@/components/landing/PopularHackathons";
-
-
 
 export default function Home() {
-
-
-
-
 
   return (
     <div className="min-h-screen bg-background">
