@@ -7,7 +7,7 @@ import { Team } from "@/models/team.model";
 import { sendDeclineEmail } from "@/Emails/sendDeclineEmail";
 import { sendAcceptEmail } from "@/Emails/sendAcceptEmail";
 import { Invite } from "@/models/invite.model";
-import type {ITeamMember} from "@/models/team.model"
+import type { ITeamMember } from "@/models/team.model"
 import { Types } from "mongoose";
 
 export async function POST(
@@ -68,15 +68,15 @@ export async function POST(
 
 		const userAlreadyMember = team[0].members.some((member: ITeamMember) => member.collegeEmail === collegeEmail)
 
-		if(userAlreadyMember){
-			return NextResponse.json(new ApiResponse(false, "You are already a member of the team"), {status: 400})
+		if (userAlreadyMember) {
+			return NextResponse.json(new ApiResponse(false, "You are already a member of the team"), { status: 400 })
 		}
 
 		const invite = await Invite.findById(inviteId)
 
 		if (action === "accept") {
-			if(team[0].members.length >= team[0].maxTeamSize){
-				return NextResponse.json(new ApiResponse(false, "Team is already full"), {status: 400})
+			if (team[0].members.length >= team[0].maxTeamSize) {
+				return NextResponse.json(new ApiResponse(false, "Team is already full"), { status: 400 })
 			}
 
 			const member = {
@@ -85,12 +85,18 @@ export async function POST(
 				collegeEmail: collegeEmail,
 			};
 
-			team[0].members.push(member);
-			
-			await team[0].save();
+			const teamToUpdate = await Team.findById(teamId);
+			if (!teamToUpdate) {
+				return NextResponse.json(new ApiResponse(false, "Team not found"), {
+					status: 404,
+				});
+			}
 
-			invite.status.map((inv: {email: string, status: string}) => {
-				if(inv.email === collegeEmail){
+			teamToUpdate.members.push(member);
+			await teamToUpdate.save();
+
+			invite.status.map((inv: { email: string, status: string }) => {
+				if (inv.email === collegeEmail) {
 					inv.status = "accepted"
 				}
 			})
@@ -112,9 +118,9 @@ export async function POST(
 				status: 201,
 			});
 		} else {  //? If declined
-	
+
 			const team = await Team.findById(teamId);
-			
+
 			if (!team) {
 				return NextResponse.json(new ApiResponse(false, "Team not found"), {
 					status: 404,
@@ -125,8 +131,8 @@ export async function POST(
 				(member: { role: string }) => member.role === "leader",
 			)[0];
 
-			invite.status.map((inv: {email: string, status: string}) => {
-				if(inv.email === collegeEmail){
+			invite.status.map((inv: { email: string, status: string }) => {
+				if (inv.email === collegeEmail) {
 					console.log("rejected")
 					inv.status = "rejected"
 				}
